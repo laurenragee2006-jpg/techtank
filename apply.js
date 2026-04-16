@@ -73,16 +73,20 @@ document.getElementById('applyForm').addEventListener('submit', async e => {
   // Upload pitch deck if provided
   let deck_url = null;
   const deckFile = document.getElementById('deckFile').files[0];
+  console.log('Deck file selected:', deckFile ? deckFile.name : 'none');
   if (deckFile) {
     const path = `${Date.now()}_${deckFile.name.replace(/\s+/g, '_')}`;
+    console.log('Uploading to path:', path);
     const { data: uploadData, error: uploadError } = await db.storage
       .from('pitch-decks')
       .upload(path, deckFile);
+    console.log('Upload result:', uploadData, uploadError);
     if (uploadError) {
       console.error('Upload error:', uploadError);
     } else {
       const { data: urlData } = db.storage.from('pitch-decks').getPublicUrl(path);
       deck_url = urlData.publicUrl;
+      console.log('Public URL:', deck_url);
     }
   }
 
