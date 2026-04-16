@@ -504,3 +504,73 @@
 .status-btn.active-blue   { background: rgba(122,184,245,0.1); border-color: rgba(122,184,245,0.3); color: var(--blue); }
 .status-btn.active-purple { background: rgba(201,166,255,0.12); border-color: rgba(201,166,255,0.3); color: var(--purple); }
 .status-btn.active-gray   { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+
+/* --- LOGIN OVERLAY --- */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.login-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-card__logo {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.login-card__logo span { color: var(--accent); }
+
+.login-card h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.login-card p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.login-card .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.login-card label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.login-card input {
+  background: var(--bg-card-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.login-card input:focus { border-color: rgba(180,255,106,0.4); }

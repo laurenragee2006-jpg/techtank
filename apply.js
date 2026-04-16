@@ -1,14 +1,14 @@
-// apply.js — Multi-step form logic
+const SUPABASE_URL = 'https://fqqyguufldcvckyaqzxw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentStep = 1;
 const totalSteps = 4;
 
 function nextStep(step) {
   if (!validateStep(step)) return;
-
   document.getElementById(`step-${step}`).classList.remove('active');
   document.getElementById(`step-${step + 1}`).classList.add('active');
-
   updateSteps(step + 1);
   currentStep = step + 1;
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -17,7 +17,6 @@ function nextStep(step) {
 function prevStep(step) {
   document.getElementById(`step-${step}`).classList.remove('active');
   document.getElementById(`step-${step - 1}`).classList.add('active');
-
   updateSteps(step - 1);
   currentStep = step - 1;
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -36,7 +35,6 @@ function validateStep(step) {
   const stepEl = document.getElementById(`step-${step}`);
   const required = stepEl.querySelectorAll('[required]');
   let valid = true;
-
   required.forEach(field => {
     field.style.borderColor = '';
     if (!field.value.trim()) {
@@ -44,12 +42,10 @@ function validateStep(step) {
       valid = false;
     }
   });
-
   if (!valid) {
     const first = stepEl.querySelector('[required]:invalid, [required][style*="rgb(255"]');
     if (first) first.focus();
   }
-
   return valid;
 }
 
@@ -63,28 +59,55 @@ function handleFileSelect(input, zoneId) {
   }
 }
 
-// Form submission
-document.getElementById('applyForm').addEventListener('submit', e => {
+document.getElementById('applyForm').addEventListener('submit', async e => {
   e.preventDefault();
   if (!validateStep(4)) return;
 
-  // Show success
+  const submitBtn = document.querySelector('[type="submit"]');
+  submitBtn.textContent = 'Submitting...';
+  submitBtn.disabled = true;
+
+  const { error } = await supabase.from('applications').insert({
+    first_name:    document.getElementById('firstName').value.trim(),
+    last_name:     document.getElementById('lastName').value.trim(),
+    email:         document.getElementById('email').value.trim(),
+    linkedin:      document.getElementById('linkedin').value.trim(),
+    role:          document.getElementById('role').value,
+    location:      document.getElementById('location').value.trim(),
+    company_name:  document.getElementById('companyName').value.trim(),
+    website:       document.getElementById('website').value.trim(),
+    sector:        document.getElementById('sector').value,
+    stage:         document.getElementById('stage').value,
+    description:   document.getElementById('description').value.trim(),
+    problem:       document.getElementById('problem').value.trim(),
+    raising:       document.getElementById('raising').value,
+    committed:     document.getElementById('committed').value.trim(),
+    revenue:       document.getElementById('revenue').value,
+    traction:      document.getElementById('traction').value.trim(),
+    prior_funding: document.getElementById('prior').value.trim(),
+    why:           document.getElementById('why').value.trim(),
+    anything_else: document.getElementById('anythingElse').value.trim(),
+  });
+
+  if (error) {
+    submitBtn.textContent = 'Submit application →';
+    submitBtn.disabled = false;
+    alert('Something went wrong. Please try again.');
+    console.error(error);
+    return;
+  }
+
   document.getElementById('step-4').style.display = 'none';
   document.getElementById('formSuccess').style.display = 'block';
-
-  // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-// Drag and drop for upload zones
 document.querySelectorAll('.upload-zone').forEach(zone => {
   zone.addEventListener('dragover', e => {
     e.preventDefault();
     zone.style.borderColor = 'rgba(180,255,106,0.5)';
   });
-  zone.addEventListener('dragleave', () => {
-    zone.style.borderColor = '';
-  });
+  zone.addEventListener('dragleave', () => { zone.style.borderColor = ''; });
   zone.addEventListener('drop', e => {
     e.preventDefault();
     zone.style.borderColor = '';

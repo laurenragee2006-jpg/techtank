@@ -1,17 +1,6 @@
-// dashboard.js — Investor dashboard interactions
-
-const APPLICANTS = [
-  { id:1, first:'Jamie', last:'Martinez', company:'GreenLoop', sector:'Climate Tech', stage:'Pre-seed', raising:'$500k–$1M', location:'Austin, TX', status:'New', applied:'Apr 14, 2026', email:'jamie@greenloop.io', linkedin:'linkedin.com/in/jamiemartinez', revenue:'Pre-revenue', committed:'$50,000', description:'GreenLoop builds software that connects businesses to carbon offset markets in real time.', traction:'800 waitlist signups, 3 pilot contracts signed.' },
-  { id:2, first:'Anika', last:'Liu', company:'SolarGrid AI', sector:'Climate Tech', stage:'Seed', raising:'$1M–$2M', location:'San Francisco, CA', status:'Reviewed', applied:'Apr 12, 2026', email:'anika@solargrid.ai', linkedin:'linkedin.com/in/anikaliu', revenue:'$10k–$50k', committed:'$400,000', description:'SolarGrid AI optimizes distributed solar panel networks using machine learning.', traction:'$22k MRR, 14 paying customers, YC alumni.' },
-  { id:3, first:'Ray', last:'Patel', company:'AgroSense', sector:'AI / ML', stage:'Seed', raising:'$1M–$2M', location:'Denver, CO', status:'Shortlisted', applied:'Apr 11, 2026', email:'ray@agrosense.io', linkedin:'linkedin.com/in/raypatel', revenue:'$50k–$100k', committed:'$650,000', description:'AgroSense uses computer vision to detect crop disease before it spreads.', traction:'$68k MRR, deployed in 3 states, Series A prep.' },
-  { id:4, first:'Priya', last:'Nair', company:'HealthBridge', sector:'Health Tech', stage:'Pre-seed', raising:'$250k–$500k', location:'Nashville, TN', status:'New', applied:'Apr 10, 2026', email:'priya@healthbridge.co', linkedin:'linkedin.com/in/priyanair', revenue:'Pre-revenue', committed:'$0', description:'HealthBridge connects rural patients to telehealth specialists via SMS.', traction:'Pilot with 2 rural clinics, 200 patient sessions.' },
-  { id:5, first:'Marcus', last:'Chen', company:'PayStack Pro', sector:'Fintech', stage:'Series A', raising:'$5M+', location:'New York, NY', status:'Reviewed', applied:'Apr 9, 2026', email:'marcus@paystackpro.com', linkedin:'linkedin.com/in/marcuschen', revenue:'$100k+', committed:'$2,500,000', description:'PayStack Pro is embedded B2B payments infrastructure for mid-market companies.', traction:'$180k MRR, 3 enterprise contracts, prior seed from a16z.' },
-  { id:6, first:'Sofia', last:'Rodriguez', company:'LearnFlow', sector:'B2B SaaS', stage:'Pre-seed', raising:'$500k–$1M', location:'Miami, FL', status:'New', applied:'Apr 9, 2026', email:'sofia@learnflow.io', linkedin:'linkedin.com/in/sofiarodriguez', revenue:'Pre-revenue', committed:'$75,000', description:'LearnFlow is an AI-powered onboarding platform for enterprise software teams.', traction:'12 design partners, 3 LOIs signed, beta launching May 2026.' },
-  { id:7, first:'Tariq', last:'Hassan', company:'MediSync', sector:'Health Tech', stage:'Seed', raising:'$1M–$2M', location:'Boston, MA', status:'Shortlisted', applied:'Apr 8, 2026', email:'tariq@medisync.health', linkedin:'linkedin.com/in/tariqhassan', revenue:'$10k–$50k', committed:'$500,000', description:'MediSync automates prior authorization for outpatient clinics, cutting approval time from 5 days to 4 hours.', traction:'$18k MRR, 8 clinics, partnerships with 2 insurance networks.' },
-  { id:8, first:'Elena', last:'Kowalski', company:'DataVault', sector:'B2B SaaS', stage:'Pre-seed', raising:'$500k–$1M', location:'Chicago, IL', status:'Passed', applied:'Apr 7, 2026', email:'elena@datavault.io', linkedin:'linkedin.com/in/elenakowalski', revenue:'Pre-revenue', committed:'$20,000', description:'DataVault is a zero-trust data sharing platform for regulated industries.', traction:'MVP complete, no paying customers yet.' },
-  { id:9, first:'James', last:'Okafor', company:'NovaDrive', sector:'Deep Tech / Hardware', stage:'Pre-seed', raising:'$250k–$500k', location:'Detroit, MI', status:'New', applied:'Apr 6, 2026', email:'james@novadrive.io', linkedin:'linkedin.com/in/jamesokafor', revenue:'Pre-revenue', committed:'$0', description:'NovaDrive builds modular electric vehicle charging hardware for apartment buildings.', traction:'Patent filed, prototype built, LOI from 2 property managers.' },
-  { id:10, first:'Yuki', last:'Tanaka', company:'BrandSense', sector:'AI / ML', stage:'Seed', raising:'$1M–$2M', location:'Los Angeles, CA', status:'Reviewed', applied:'Apr 5, 2026', email:'yuki@brandsense.ai', linkedin:'linkedin.com/in/yukitanaka', revenue:'$10k–$50k', committed:'$300,000', description:'BrandSense uses AI to track and analyze brand sentiment across social and earned media.', traction:'$14k MRR, 20 paying brands, 94% retention.' },
-];
+const SUPABASE_URL = 'https://fqqyguufldcvckyaqzxw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const AVATAR_COLORS = [
   ['#1a3a1a','#B4FF6A'],['#1a2a3a','#7ab8f5'],['#2a1a3a','#c9a6ff'],
@@ -19,69 +8,160 @@ const AVATAR_COLORS = [
   ['#1a1a2a','#a0b0ff'],['#2a1a2a','#ff90c0'],['#1a2a1a','#90e090'],['#2a1a1a','#ffb060'],
 ];
 
+let allApplicants = [];
+let filteredData = [];
+let currentApplicant = null;
+
 function initials(first, last) {
-  return (first[0] + last[0]).toUpperCase();
+  return ((first || '?')[0] + (last || '?')[0]).toUpperCase();
 }
 
-let filteredData = [...APPLICANTS];
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// --- AUTH ---
+
+async function checkAuth() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('userEmail').textContent = session.user.email;
+    loadApplicants();
+  } else {
+    document.getElementById('loginOverlay').style.display = 'flex';
+  }
+}
+
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.querySelector('.login-card .btn--primary');
+
+  errEl.style.display = 'none';
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    errEl.textContent = 'Invalid email or password.';
+    errEl.style.display = 'block';
+    btn.textContent = 'Sign in →';
+    btn.disabled = false;
+    return;
+  }
+
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('userEmail').textContent = data.user.email;
+  loadApplicants();
+}
+
+async function handleSignOut() {
+  await supabase.auth.signOut();
+  document.getElementById('loginOverlay').style.display = 'flex';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+  allApplicants = [];
+  filteredData = [];
+  renderTable([]);
+}
+
+// --- DATA ---
+
+async function loadApplicants() {
+  const { data, error } = await supabase
+    .from('applications')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) { console.error(error); return; }
+
+  allApplicants = data || [];
+  filteredData = [...allApplicants];
+  renderTable(filteredData);
+  updateStats();
+}
+
+function updateStats() {
+  const total = allApplicants.length;
+  const shortlisted = allApplicants.filter(a => a.status === 'Shortlisted').length;
+  const pending = allApplicants.filter(a => a.status === 'New').length;
+  const thisWeek = allApplicants.filter(a => {
+    const d = new Date(a.created_at);
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return d >= weekAgo;
+  }).length;
+
+  const stats = document.querySelectorAll('.db-stat__num');
+  if (stats[0]) stats[0].textContent = total;
+  if (stats[1]) stats[1].textContent = shortlisted;
+  if (stats[2]) stats[2].textContent = pending;
+  if (stats[3]) stats[3].textContent = thisWeek;
+
+  document.querySelector('.db-count').textContent = `${total} total`;
+}
+
+// --- TABLE ---
 
 function renderTable(data) {
   const tbody = document.getElementById('applicantBody');
   tbody.innerHTML = '';
 
   if (data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--text-dim)">No applicants match your search.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--text-dim)">No applicants found.</td></tr>`;
     return;
   }
 
   data.forEach((a, i) => {
     const [bg, color] = AVATAR_COLORS[i % AVATAR_COLORS.length];
     const statusClass = {
-      'New': 'badge--new',
-      'Reviewed': 'badge--reviewed',
-      'Shortlisted': 'badge--shortlisted',
-      'Passed': 'badge--passed',
+      'New': 'badge--new', 'Reviewed': 'badge--reviewed',
+      'Shortlisted': 'badge--shortlisted', 'Passed': 'badge--passed',
     }[a.status] || 'badge--new';
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
         <div class="db-founder">
-          <div class="db-avatar" style="background:${bg};color:${color}">${initials(a.first, a.last)}</div>
-          <span class="db-founder-name">${a.first} ${a.last}</span>
+          <div class="db-avatar" style="background:${bg};color:${color}">${initials(a.first_name, a.last_name)}</div>
+          <span class="db-founder-name">${a.first_name} ${a.last_name}</span>
         </div>
       </td>
-      <td style="color:var(--text-muted)">${a.company}</td>
-      <td style="color:var(--text-muted)">${a.sector}</td>
-      <td style="color:var(--text-muted)">${a.stage}</td>
-      <td style="color:var(--text-muted)">${a.raising}</td>
-      <td style="color:var(--text-dim)">${a.location}</td>
-      <td><span class="db-badge ${statusClass}">${a.status}</span></td>
-      <td style="color:var(--text-dim);white-space:nowrap">${a.applied}</td>
+      <td style="color:var(--text-muted)">${a.company_name || '—'}</td>
+      <td style="color:var(--text-muted)">${a.sector || '—'}</td>
+      <td style="color:var(--text-muted)">${a.stage || '—'}</td>
+      <td style="color:var(--text-muted)">${a.raising || '—'}</td>
+      <td style="color:var(--text-dim)">${a.location || '—'}</td>
+      <td><span class="db-badge ${statusClass}">${a.status || 'New'}</span></td>
+      <td style="color:var(--text-dim);white-space:nowrap">${formatDate(a.created_at)}</td>
     `;
     tr.addEventListener('click', () => openDrawer(a, bg, color));
     tbody.appendChild(tr);
   });
 }
 
-// Search
+// --- SEARCH & FILTER ---
+
 document.getElementById('searchInput').addEventListener('input', e => {
   const q = e.target.value.toLowerCase();
-  filteredData = APPLICANTS.filter(a =>
-    `${a.first} ${a.last} ${a.company} ${a.sector} ${a.stage} ${a.location} ${a.status}`.toLowerCase().includes(q)
+  filteredData = allApplicants.filter(a =>
+    `${a.first_name} ${a.last_name} ${a.company_name} ${a.sector} ${a.stage} ${a.location} ${a.status}`.toLowerCase().includes(q)
   );
   renderTable(filteredData);
 });
 
-// Filters
 function filterApplicants() {
   const selects = document.querySelectorAll('.db-filters select');
   const [sector, stage, status] = [...selects].map(s => s.value);
-  filteredData = APPLICANTS.filter(a => {
-    return (!sector || a.sector === sector) &&
-           (!stage || a.stage === stage) &&
-           (!status || a.status === status);
-  });
+  filteredData = allApplicants.filter(a =>
+    (!sector || a.sector === sector) &&
+    (!stage  || a.stage === stage)   &&
+    (!status || a.status === status)
+  );
   renderTable(filteredData);
 }
 
@@ -90,7 +170,8 @@ function toggleFilters() {
   bar.style.display = bar.style.display === 'none' ? 'flex' : 'none';
 }
 
-// AI Panel
+// --- AI PANEL ---
+
 function toggleAI() {
   const panel = document.getElementById('aiPanel');
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
@@ -111,87 +192,91 @@ function runAIQuery() {
   result.textContent = 'Thinking...';
 
   setTimeout(() => {
-    let matches = APPLICANTS.filter(a => {
+    const words = q.replace(/[^a-z0-9 ]/g, '').split(' ').filter(w => w.length > 2);
+    const matches = allApplicants.filter(a => {
       const blob = `${a.sector} ${a.stage} ${a.location} ${a.description} ${a.traction} ${a.status}`.toLowerCase();
-      const words = q.replace(/[^a-z0-9 ]/g, '').split(' ').filter(w => w.length > 2);
       return words.some(w => blob.includes(w));
     });
 
     if (matches.length === 0) {
-      result.textContent = 'No applicants closely matched that query. Try adjusting your search.';
+      result.textContent = 'No applicants matched that query.';
       return;
     }
 
     result.innerHTML = `
       <strong style="color:var(--accent);font-size:12px;">✦ AI result</strong><br><br>
       Found <strong>${matches.length}</strong> applicant${matches.length !== 1 ? 's' : ''} matching your query:<br><br>
-      ${matches.slice(0, 5).map(a => `<span style="color:var(--text)">→ ${a.first} ${a.last}</span> — ${a.company} (${a.sector}, ${a.stage}, ${a.location})`).join('<br>')}
+      ${matches.slice(0, 5).map(a => `<span style="color:var(--text)">→ ${a.first_name} ${a.last_name}</span> — ${a.company_name} (${a.sector}, ${a.stage}, ${a.location})`).join('<br>')}
       ${matches.length > 5 ? `<br><span style="color:var(--text-dim)">...and ${matches.length - 5} more</span>` : ''}
     `;
-
     renderTable(matches);
-  }, 800);
+  }, 600);
 }
 
 document.getElementById('aiInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') runAIQuery();
 });
 
-// Drawer
+// --- DRAWER ---
+
 function openDrawer(a, bg, color) {
-  const [drawerBg, drawerColor] = [bg, color];
+  currentApplicant = a;
 
-  document.getElementById('drawerAvatar').style.background = drawerBg;
-  document.getElementById('drawerAvatar').style.color = drawerColor;
-  document.getElementById('drawerAvatar').textContent = initials(a.first, a.last);
-  document.getElementById('drawerName').textContent = `${a.first} ${a.last}`;
-  document.getElementById('drawerCompany').textContent = `${a.company} · ${a.stage}`;
+  document.getElementById('drawerAvatar').style.background = bg;
+  document.getElementById('drawerAvatar').style.color = color;
+  document.getElementById('drawerAvatar').textContent = initials(a.first_name, a.last_name);
+  document.getElementById('drawerName').textContent = `${a.first_name} ${a.last_name}`;
+  document.getElementById('drawerCompany').textContent = `${a.company_name || '—'} · ${a.stage || '—'}`;
 
-  const statusMap = {
-    'New': ['active-green', 'New'],
-    'Reviewed': ['active-blue', 'Reviewed'],
-    'Shortlisted': ['active-purple', 'Shortlisted'],
-    'Passed': ['active-gray', 'Passed'],
-  };
-
+  const s = a.status || 'New';
   document.getElementById('drawerBody').innerHTML = `
     <div class="drawer-section">
       <div class="drawer-section-title">Status</div>
       <div class="drawer-status-row">
-        <button class="status-btn ${a.status === 'New' ? 'active-green' : ''}" onclick="setStatus(this, 'New')">New</button>
-        <button class="status-btn ${a.status === 'Reviewed' ? 'active-blue' : ''}" onclick="setStatus(this, 'Reviewed')">Reviewed</button>
-        <button class="status-btn ${a.status === 'Shortlisted' ? 'active-purple' : ''}" onclick="setStatus(this, 'Shortlisted')">Shortlisted</button>
-        <button class="status-btn ${a.status === 'Passed' ? 'active-gray' : ''}" onclick="setStatus(this, 'Passed')">Passed</button>
+        <button class="status-btn ${s==='New'?'active-green':''}"        onclick="setStatus(this,'New')">New</button>
+        <button class="status-btn ${s==='Reviewed'?'active-blue':''}"    onclick="setStatus(this,'Reviewed')">Reviewed</button>
+        <button class="status-btn ${s==='Shortlisted'?'active-purple':''}" onclick="setStatus(this,'Shortlisted')">Shortlisted</button>
+        <button class="status-btn ${s==='Passed'?'active-gray':''}"      onclick="setStatus(this,'Passed')">Passed</button>
       </div>
     </div>
 
     <div class="drawer-section">
       <div class="drawer-section-title">Company</div>
-      <div class="drawer-field"><span class="drawer-field__label">Company</span><span class="drawer-field__value">${a.company}</span></div>
-      <div class="drawer-field"><span class="drawer-field__label">Sector</span><span class="drawer-field__value">${a.sector}</span></div>
-      <div class="drawer-field"><span class="drawer-field__label">Stage</span><span class="drawer-field__value">${a.stage}</span></div>
-      <div class="drawer-field"><span class="drawer-field__label">Location</span><span class="drawer-field__value">${a.location}</span></div>
-      <div class="drawer-field" style="flex-direction:column;gap:6px"><span class="drawer-field__label">Description</span><span class="drawer-field__value" style="text-align:left;line-height:1.6">${a.description}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Company</span><span class="drawer-field__value">${a.company_name||'—'}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Website</span><span class="drawer-field__value">${a.website?`<a href="${a.website}" target="_blank" style="color:var(--blue)">${a.website}</a>`:'—'}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Sector</span><span class="drawer-field__value">${a.sector||'—'}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Stage</span><span class="drawer-field__value">${a.stage||'—'}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Location</span><span class="drawer-field__value">${a.location||'—'}</span></div>
+      <div class="drawer-field" style="flex-direction:column;gap:6px"><span class="drawer-field__label">Description</span><span class="drawer-field__value" style="text-align:left;line-height:1.6">${a.description||'—'}</span></div>
+      <div class="drawer-field" style="flex-direction:column;gap:6px"><span class="drawer-field__label">Problem</span><span class="drawer-field__value" style="text-align:left;line-height:1.6">${a.problem||'—'}</span></div>
     </div>
 
     <div class="drawer-section">
       <div class="drawer-section-title">Fundraising</div>
-      <div class="drawer-field"><span class="drawer-field__label">Raising</span><span class="drawer-field__value">${a.raising}</span></div>
-      <div class="drawer-field"><span class="drawer-field__label">Committed</span><span class="drawer-field__value">${a.committed}</span></div>
-      <div class="drawer-field"><span class="drawer-field__label">Revenue (MRR)</span><span class="drawer-field__value">${a.revenue}</span></div>
-      <div class="drawer-field" style="flex-direction:column;gap:6px"><span class="drawer-field__label">Traction</span><span class="drawer-field__value" style="text-align:left;line-height:1.6">${a.traction}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Raising</span><span class="drawer-field__value">${a.raising||'—'}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Committed</span><span class="drawer-field__value">${a.committed||'—'}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Revenue (MRR)</span><span class="drawer-field__value">${a.revenue||'—'}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Prior funding</span><span class="drawer-field__value">${a.prior_funding||'—'}</span></div>
+      <div class="drawer-field" style="flex-direction:column;gap:6px"><span class="drawer-field__label">Traction</span><span class="drawer-field__value" style="text-align:left;line-height:1.6">${a.traction||'—'}</span></div>
+    </div>
+
+    <div class="drawer-section">
+      <div class="drawer-section-title">Why us</div>
+      <div class="drawer-field" style="flex-direction:column;gap:6px"><span class="drawer-field__value" style="text-align:left;line-height:1.6">${a.why||'—'}</span></div>
     </div>
 
     <div class="drawer-section">
       <div class="drawer-section-title">Contact</div>
-      <div class="drawer-field"><span class="drawer-field__label">Email</span><span class="drawer-field__value" style="color:var(--blue)">${a.email}</span></div>
-      <div class="drawer-field"><span class="drawer-field__label">LinkedIn</span><span class="drawer-field__value" style="color:var(--blue)">${a.linkedin}</span></div>
-      <div class="drawer-field"><span class="drawer-field__label">Applied</span><span class="drawer-field__value">${a.applied}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Email</span><span class="drawer-field__value"><a href="mailto:${a.email}" style="color:var(--blue)">${a.email||'—'}</a></span></div>
+      <div class="drawer-field"><span class="drawer-field__label">LinkedIn</span><span class="drawer-field__value">${a.linkedin?`<a href="${a.linkedin}" target="_blank" style="color:var(--blue)">${a.linkedin}</a>`:'—'}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Role</span><span class="drawer-field__value">${a.role||'—'}</span></div>
+      <div class="drawer-field"><span class="drawer-field__label">Applied</span><span class="drawer-field__value">${formatDate(a.created_at)}</span></div>
     </div>
 
     <div class="drawer-section">
-      <div class="drawer-section-title">Team notes</div>
-      <textarea class="drawer-notes" placeholder="Add notes about this applicant..."></textarea>
+      <div class="drawer-section-title">Notes</div>
+      <textarea class="drawer-notes" id="drawerNotes" placeholder="Add notes about this applicant...">${a.notes||''}</textarea>
+      <button class="btn btn--ghost" style="font-size:12px;padding:7px 16px;margin-top:8px" onclick="saveNotes()">Save notes</button>
     </div>
   `;
 
@@ -202,15 +287,34 @@ function openDrawer(a, bg, color) {
 function closeDrawer() {
   document.getElementById('drawer').classList.remove('open');
   document.getElementById('drawerOverlay').classList.remove('open');
+  currentApplicant = null;
 }
 
-function setStatus(btn, status) {
-  btn.closest('.drawer-status-row').querySelectorAll('.status-btn').forEach(b => {
-    b.className = 'status-btn';
-  });
+async function setStatus(btn, status) {
+  btn.closest('.drawer-status-row').querySelectorAll('.status-btn').forEach(b => b.className = 'status-btn');
   const classMap = { 'New':'active-green', 'Reviewed':'active-blue', 'Shortlisted':'active-purple', 'Passed':'active-gray' };
   btn.classList.add(classMap[status]);
+
+  if (!currentApplicant) return;
+  currentApplicant.status = status;
+
+  await supabase.from('applications').update({ status }).eq('id', currentApplicant.id);
+
+  const idx = allApplicants.findIndex(a => a.id === currentApplicant.id);
+  if (idx !== -1) allApplicants[idx].status = status;
+  renderTable(filteredData.map(a => a.id === currentApplicant.id ? { ...a, status } : a));
+  updateStats();
 }
 
-// Init
-renderTable(APPLICANTS);
+async function saveNotes() {
+  if (!currentApplicant) return;
+  const notes = document.getElementById('drawerNotes').value;
+  await supabase.from('applications').update({ notes }).eq('id', currentApplicant.id);
+  const idx = allApplicants.findIndex(a => a.id === currentApplicant.id);
+  if (idx !== -1) allApplicants[idx].notes = notes;
+  const btn = document.querySelector('.drawer-notes + button');
+  if (btn) { btn.textContent = 'Saved ✓'; setTimeout(() => btn.textContent = 'Save notes', 1500); }
+}
+
+// --- INIT ---
+checkAuth();
