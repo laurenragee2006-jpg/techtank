@@ -21,14 +21,10 @@
       <p>Sign in to review applications.</p>
       <div class="form-group">
         <label for="loginEmail">Email</label>
-        <input type="email" id="loginEmail" placeholder="you@email.com" />
-      </div>
-      <div class="form-group">
-        <label for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleLogin()" />
+        <input type="email" id="loginEmail" placeholder="you@email.com" onkeydown="if(event.key==='Enter')handleLogin()" />
       </div>
       <div id="loginError" style="display:none;color:rgba(255,80,80,0.8);font-size:13px;margin-bottom:0.5rem"></div>
-      <button class="btn btn--primary" style="width:100%" onclick="handleLogin()">Sign in →</button>
+      <button class="btn btn--primary" style="width:100%" onclick="handleLogin()">Send sign-in link →</button>
     </div>
   </div>
 

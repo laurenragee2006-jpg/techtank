@@ -23,8 +23,7 @@ function formatDate(iso) {
 
 // --- AUTH ---
 
-async function checkAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
+supabase.auth.onAuthStateChange((event, session) => {
   if (session) {
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('userEmail').textContent = session.user.email;
@@ -32,31 +31,36 @@ async function checkAuth() {
   } else {
     document.getElementById('loginOverlay').style.display = 'flex';
   }
-}
+});
 
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
   const errEl = document.getElementById('loginError');
   const btn = document.querySelector('.login-card .btn--primary');
+  if (!email) return;
 
   errEl.style.display = 'none';
-  btn.textContent = 'Signing in...';
+  btn.textContent = 'Sending...';
   btn.disabled = true;
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: 'https://techtank-rho.vercel.app/dashboard.html' }
+  });
 
   if (error) {
-    errEl.textContent = 'Invalid email or password.';
+    errEl.textContent = error.message;
     errEl.style.display = 'block';
-    btn.textContent = 'Sign in →';
+    btn.textContent = 'Send sign-in link →';
     btn.disabled = false;
     return;
   }
 
-  document.getElementById('loginOverlay').style.display = 'none';
-  document.getElementById('userEmail').textContent = data.user.email;
-  loadApplicants();
+  document.querySelector('.login-card').innerHTML = `
+    <div class="login-card__logo">deal<span>flow</span></div>
+    <h2>Check your email</h2>
+    <p style="color:var(--text-muted)">We sent a link to <strong style="color:var(--text)">${email}</strong> — click it to open the dashboard.</p>
+  `;
 }
 
 async function handleSignOut() {
@@ -316,5 +320,4 @@ async function saveNotes() {
   if (btn) { btn.textContent = 'Saved ✓'; setTimeout(() => btn.textContent = 'Save notes', 1500); }
 }
 
-// --- INIT ---
-checkAuth();
+// --- INIT --- (auth handled by onAuthStateChange above)
