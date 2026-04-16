@@ -78,7 +78,9 @@ document.getElementById('applyForm').addEventListener('submit', async e => {
     const { data: uploadData, error: uploadError } = await db.storage
       .from('pitch-decks')
       .upload(path, deckFile);
-    if (!uploadError) {
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+    } else {
       const { data: urlData } = db.storage.from('pitch-decks').getPublicUrl(path);
       deck_url = urlData.publicUrl;
     }
