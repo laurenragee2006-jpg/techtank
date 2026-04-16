@@ -7,6 +7,7 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentStep = 1;
 const totalSteps = 4;
+let selectedDeckFile = null;
 
 function nextStep(step) {
   if (!validateStep(step)) return;
@@ -56,6 +57,7 @@ function handleFileSelect(input, zoneId) {
   const zone = document.getElementById(zoneId);
   if (input.files && input.files[0]) {
     const file = input.files[0];
+    if (zoneId === 'deckZone') selectedDeckFile = file;
     zone.classList.add('has-file');
     zone.querySelector('p').textContent = `✓ ${file.name}`;
     zone.querySelector('span').textContent = `${(file.size / 1024 / 1024).toFixed(1)} MB`;
@@ -72,14 +74,13 @@ document.getElementById('applyForm').addEventListener('submit', async e => {
 
   // Upload pitch deck if provided
   let deck_url = null;
-  const deckFile = document.getElementById('deckFile').files[0];
-  console.log('Deck file selected:', deckFile ? deckFile.name : 'none');
-  if (deckFile) {
-    const path = `${Date.now()}_${deckFile.name.replace(/\s+/g, '_')}`;
+  console.log('Deck file selected:', selectedDeckFile ? selectedDeckFile.name : 'none');
+  if (selectedDeckFile) {
+    const path = `${Date.now()}_${selectedDeckFile.name.replace(/\s+/g, '_')}`;
     console.log('Uploading to path:', path);
     const { data: uploadData, error: uploadError } = await db.storage
       .from('pitch-decks')
-      .upload(path, deckFile);
+      .upload(path, selectedDeckFile);
     console.log('Upload result:', uploadData, uploadError);
     if (uploadError) {
       console.error('Upload error:', uploadError);
