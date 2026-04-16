@@ -1,5 +1,8 @@
 const SUPABASE_URL = 'https://fqqyguufldcvckyaqzxw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr';
+
+if (!window.supabase) throw new Error('Supabase CDN not loaded');
+
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentStep = 1;

@@ -1,5 +1,11 @@
 const SUPABASE_URL = 'https://fqqyguufldcvckyaqzxw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr';
+
+if (!window.supabase) {
+  document.body.innerHTML = '<p style="color:red;padding:2rem">Supabase failed to load. Check your internet connection and try again.</p>';
+  throw new Error('Supabase CDN not loaded');
+}
+
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const AVATAR_COLORS = [
