@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apply — DealFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="apply.css" />
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="index.html" class="nav__logo">deal<span>flow</span></a>
+    <ul class="nav__links">
+      <li><a href="index.html">← Back to home</a></li>
+    </ul>
+  </nav>
+
+  <div class="apply-layout">
+    <!-- Sidebar -->
+    <aside class="apply-sidebar">
+      <div class="apply-sidebar__inner">
+        <p class="section-label">Venture Capital Group</p>
+        <h2 class="apply-sidebar__title">Apply to<br><em>Horizon Ventures</em></h2>
+        <p class="apply-sidebar__sub">We invest in early-stage founders solving hard problems. Tell us about yourself and your company.</p>
+        <div class="apply-sidebar__steps">
+          <div class="apply-step apply-step--active" data-step="1">
+            <div class="apply-step__dot"></div>
+            <span>Founder info</span>
+          </div>
+          <div class="apply-step" data-step="2">
+            <div class="apply-step__dot"></div>
+            <span>Company details</span>
+          </div>
+          <div class="apply-step" data-step="3">
+            <div class="apply-step__dot"></div>
+            <span>Fundraising</span>
+          </div>
+          <div class="apply-step" data-step="4">
+            <div class="apply-step__dot"></div>
+            <span>Upload materials</span>
+          </div>
+        </div>
+        <div class="apply-sidebar__note">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M8 7v4M8 5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Your data is only visible to Horizon Ventures investors.
+        </div>
+      </div>
+    </aside>
+
+    <!-- Form -->
+    <main class="apply-main">
+      <form class="apply-form" id="applyForm" novalidate>
+
+        <!-- STEP 1: Founder Info -->
+        <div class="form-step active" id="step-1">
+          <div class="form-step__header">
+            <p class="form-step__label">Step 1 of 4</p>
+            <h3>Founder information</h3>
+          </div>
+
+          <div class="form-row form-row--2">
+            <div class="form-group">
+              <label for="firstName">First name <span class="required">*</span></label>
+              <input type="text" id="firstName" name="firstName" placeholder="Jane" required />
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last name <span class="required">*</span></label>
+              <input type="text" id="lastName" name="lastName" placeholder="Smith" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email address <span class="required">*</span></label>
+            <input type="email" id="email" name="email" placeholder="jane@company.com" required />
+          </div>
+
+          <div class="form-group">
+            <label for="linkedin">LinkedIn profile URL</label>
+            <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/..." />
+          </div>
+
+          <div class="form-group">
+            <label for="role">Your role at the company <span class="required">*</span></label>
+            <select id="role" name="role" required>
+              <option value="" disabled selected>Select your role</option>
+              <option value="ceo">CEO / Founder</option>
+              <option value="cto">CTO / Co-Founder</option>
+              <option value="coo">COO / Co-Founder</option>
+              <option value="other">Other Co-Founder</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="location">Location <span class="required">*</span></label>
+            <input type="text" id="location" name="location" placeholder="City, State" required />
+          </div>
+
+          <div class="form-actions">
+            <div></div>
+            <button type="button" class="btn btn--primary" onclick="nextStep(1)">Next: Company details →</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Company -->
+        <div class="form-step" id="step-2">
+          <div class="form-step__header">
+            <p class="form-step__label">Step 2 of 4</p>
+            <h3>Company details</h3>
+          </div>
+
+          <div class="form-row form-row--2">
+            <div class="form-group">
+              <label for="companyName">Company name <span class="required">*</span></label>
+              <input type="text" id="companyName" name="companyName" placeholder="Acme Inc." required />
+            </div>
+            <div class="form-group">
+              <label for="website">Company website</label>
+              <input type="url" id="website" name="website" placeholder="https://..." />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="sector">Sector / Industry <span class="required">*</span></label>
+            <select id="sector" name="sector" required>
+              <option value="" disabled selected>Select a sector</option>
+              <option value="climate">Climate Tech</option>
+              <option value="fintech">Fintech</option>
+              <option value="healthtech">Health Tech</option>
+              <option value="edtech">EdTech</option>
+              <option value="saas">B2B SaaS</option>
+              <option value="consumer">Consumer</option>
+              <option value="deep-tech">Deep Tech / Hardware</option>
+              <option value="ai">AI / ML</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="stage">Current stage <span class="required">*</span></label>
+            <select id="stage" name="stage" required>
+              <option value="" disabled selected>Select your stage</option>
+              <option value="idea">Idea / Pre-product</option>
+              <option value="mvp">MVP / Beta</option>
+              <option value="pre-seed">Pre-seed</option>
+              <option value="seed">Seed</option>
+              <option value="series-a">Series A</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Describe your company in 1–2 sentences <span class="required">*</span></label>
+            <textarea id="description" name="description" rows="3" placeholder="We build software that helps..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="problem">What problem are you solving? <span class="required">*</span></label>
+            <textarea id="problem" name="problem" rows="4" placeholder="The problem we're solving is..." required></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn--ghost" onclick="prevStep(2)">← Back</button>
+            <button type="button" class="btn btn--primary" onclick="nextStep(2)">Next: Fundraising →</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Fundraising -->
+        <div class="form-step" id="step-3">
+          <div class="form-step__header">
+            <p class="form-step__label">Step 3 of 4</p>
+            <h3>Fundraising details</h3>
+          </div>
+
+          <div class="form-row form-row--2">
+            <div class="form-group">
+              <label for="raising">Amount raising <span class="required">*</span></label>
+              <select id="raising" name="raising" required>
+                <option value="" disabled selected>Select range</option>
+                <option value="under-250k">Under $250k</option>
+                <option value="250k-500k">$250k – $500k</option>
+                <option value="500k-1m">$500k – $1M</option>
+                <option value="1m-2m">$1M – $2M</option>
+                <option value="2m-5m">$2M – $5M</option>
+                <option value="5m+">$5M+</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="committed">Amount committed so far</label>
+              <input type="text" id="committed" name="committed" placeholder="e.g. $50,000" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="revenue">Monthly revenue (MRR)</label>
+            <select id="revenue" name="revenue">
+              <option value="" disabled selected>Select range</option>
+              <option value="pre-revenue">Pre-revenue</option>
+              <option value="under-10k">Under $10k</option>
+              <option value="10k-50k">$10k – $50k</option>
+              <option value="50k-100k">$50k – $100k</option>
+              <option value="100k+">$100k+</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="traction">Describe your traction <span class="required">*</span></label>
+            <textarea id="traction" name="traction" rows="4" placeholder="Users, revenue, pilots, partnerships, waitlist..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="prior">Prior funding or investors</label>
+            <input type="text" id="prior" name="prior" placeholder="e.g. Y Combinator, angel round, none" />
+          </div>
+
+          <div class="form-group">
+            <label for="why">Why are you applying to Horizon Ventures? <span class="required">*</span></label>
+            <textarea id="why" name="why" rows="3" placeholder="What specifically about our fund..." required></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn--ghost" onclick="prevStep(3)">← Back</button>
+            <button type="button" class="btn btn--primary" onclick="nextStep(3)">Next: Upload materials →</button>
+          </div>
+        </div>
+
+        <!-- STEP 4: Upload -->
+        <div class="form-step" id="step-4">
+          <div class="form-step__header">
+            <p class="form-step__label">Step 4 of 4</p>
+            <h3>Upload your materials</h3>
+          </div>
+
+          <div class="form-group">
+            <label>Pitch deck <span class="required">*</span></label>
+            <div class="upload-zone" id="deckZone" onclick="document.getElementById('deckFile').click()">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 16V8M12 8l-3 3M12 8l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>
+              <p>Click to upload or drag and drop</p>
+              <span>PDF, PPT, PPTX · Max 25MB</span>
+            </div>
+            <input type="file" id="deckFile" name="deckFile" accept=".pdf,.ppt,.pptx" style="display:none" onchange="handleFileSelect(this, 'deckZone')" />
+          </div>
+
+          <div class="form-group">
+            <label>Financial model / projections</label>
+            <div class="upload-zone" id="financeZone" onclick="document.getElementById('financeFile').click()">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 16V8M12 8l-3 3M12 8l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>
+              <p>Click to upload or drag and drop</p>
+              <span>PDF, XLS, XLSX · Max 25MB</span>
+            </div>
+            <input type="file" id="financeFile" name="financeFile" accept=".pdf,.xls,.xlsx" style="display:none" onchange="handleFileSelect(this, 'financeZone')" />
+          </div>
+
+          <div class="form-group">
+            <label for="anythingElse">Anything else you'd like us to know?</label>
+            <textarea id="anythingElse" name="anythingElse" rows="3" placeholder="Optional..."></textarea>
+          </div>
+
+          <div class="form-group form-group--checkbox">
+            <input type="checkbox" id="consent" name="consent" required />
+            <label for="consent">I agree that my application data will be stored and reviewed by Horizon Ventures. <span class="required">*</span></label>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn--ghost" onclick="prevStep(4)">← Back</button>
+            <button type="submit" class="btn btn--primary">Submit application →</button>
+          </div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="form-success" id="formSuccess" style="display:none">
+          <div class="success-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15" stroke="#B4FF6A" stroke-width="1.5"/><path d="M10 16l4 4 8-8" stroke="#B4FF6A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Application submitted!</h3>
+          <p>Thanks for applying to Horizon Ventures. We review every application and will be in touch within 2–3 weeks.</p>
+          <a href="index.html" class="btn btn--ghost" style="margin-top:1.5rem">← Back to home</a>
+        </div>
+
+      </form>
+    </main>
+  </div>
+
+  <script src="apply.js"></script>
+</body>
+</html>
