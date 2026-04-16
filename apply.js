@@ -8,6 +8,30 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentStep = 1;
 const totalSteps = 4;
 let selectedDeckFile = null;
+let currentGroup = null;
+
+async function loadGroup() {
+  const slug = new URLSearchParams(window.location.search).get('g');
+  if (!slug) {
+    document.getElementById('groupName').textContent = 'this group';
+    document.getElementById('groupDesc').textContent = 'Invalid apply link — no group specified.';
+    document.querySelector('[type="submit"]').disabled = true;
+    return;
+  }
+  const { data, error } = await db.from('groups').select('*').eq('slug', slug).single();
+  if (error || !data) {
+    document.getElementById('groupName').textContent = 'Unknown Group';
+    document.getElementById('groupDesc').textContent = 'This apply link is invalid or expired.';
+    document.querySelector('[type="submit"]').disabled = true;
+    return;
+  }
+  currentGroup = data;
+  document.getElementById('groupName').textContent = data.name;
+  document.getElementById('groupDesc').textContent = data.description;
+  document.getElementById('groupPrivacyNote').textContent = `Your data is only visible to ${data.name} investors.`;
+}
+
+loadGroup();
 
 function nextStep(step) {
   if (!validateStep(step)) return;
@@ -116,6 +140,7 @@ document.getElementById('applyForm').addEventListener('submit', async e => {
     why:           document.getElementById('why').value.trim(),
     anything_else: document.getElementById('anythingElse').value.trim(),
     deck_url,
+    group_id: currentGroup ? currentGroup.id : null,
   });
 
   if (error) {

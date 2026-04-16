@@ -29,15 +29,27 @@ function formatDate(iso) {
 
 // --- AUTH ---
 
-db.auth.onAuthStateChange((event, session) => {
+let userGroup = null;
+
+db.auth.onAuthStateChange(async (event, session) => {
   if (session) {
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('userEmail').textContent = session.user.email;
+    await loadGroup(session.user.email);
     loadApplicants();
   } else {
     document.getElementById('loginOverlay').style.display = 'flex';
   }
 });
+
+async function loadGroup(email) {
+  const { data } = await db.from('groups').select('*').eq('owner_email', email).single();
+  if (data) {
+    userGroup = data;
+    document.querySelector('.db-group__avatar').textContent = data.name.slice(0, 2).toUpperCase();
+    document.querySelector('.db-group__info strong').textContent = data.name;
+  }
+}
 
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
