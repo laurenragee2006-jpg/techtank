@@ -70,6 +70,20 @@ document.getElementById('applyForm').addEventListener('submit', async e => {
   submitBtn.textContent = 'Submitting...';
   submitBtn.disabled = true;
 
+  // Upload pitch deck if provided
+  let deck_url = null;
+  const deckFile = document.getElementById('deckFile').files[0];
+  if (deckFile) {
+    const path = `${Date.now()}_${deckFile.name.replace(/\s+/g, '_')}`;
+    const { data: uploadData, error: uploadError } = await db.storage
+      .from('pitch-decks')
+      .upload(path, deckFile);
+    if (!uploadError) {
+      const { data: urlData } = db.storage.from('pitch-decks').getPublicUrl(path);
+      deck_url = urlData.publicUrl;
+    }
+  }
+
   const { error } = await db.from('applications').insert({
     first_name:    document.getElementById('firstName').value.trim(),
     last_name:     document.getElementById('lastName').value.trim(),
@@ -90,6 +104,7 @@ document.getElementById('applyForm').addEventListener('submit', async e => {
     prior_funding: document.getElementById('prior').value.trim(),
     why:           document.getElementById('why').value.trim(),
     anything_else: document.getElementById('anythingElse').value.trim(),
+    deck_url,
   });
 
   if (error) {

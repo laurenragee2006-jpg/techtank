@@ -274,6 +274,12 @@ function openDrawer(a, bg, color) {
       <div class="drawer-field" style="flex-direction:column;gap:6px"><span class="drawer-field__value" style="text-align:left;line-height:1.6">${a.why||'—'}</span></div>
     </div>
 
+    ${a.deck_url ? `
+    <div class="drawer-section">
+      <div class="drawer-section-title">Materials</div>
+      <a href="${a.deck_url}" target="_blank" class="btn btn--ghost" style="font-size:13px;padding:8px 16px;display:inline-block">↓ View pitch deck</a>
+    </div>` : ''}
+
     <div class="drawer-section">
       <div class="drawer-section-title">Contact</div>
       <div class="drawer-field"><span class="drawer-field__label">Email</span><span class="drawer-field__value"><a href="mailto:${a.email}" style="color:var(--blue)">${a.email||'—'}</a></span></div>
