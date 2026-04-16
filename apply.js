@@ -3,7 +3,7 @@ const SUPABASE_KEY = 'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr';
 
 if (!window.supabase) throw new Error('Supabase CDN not loaded');
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentStep = 1;
 const totalSteps = 4;
@@ -70,7 +70,7 @@ document.getElementById('applyForm').addEventListener('submit', async e => {
   submitBtn.textContent = 'Submitting...';
   submitBtn.disabled = true;
 
-  const { error } = await supabase.from('applications').insert({
+  const { error } = await db.from('applications').insert({
     first_name:    document.getElementById('firstName').value.trim(),
     last_name:     document.getElementById('lastName').value.trim(),
     email:         document.getElementById('email').value.trim(),

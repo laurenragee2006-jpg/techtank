@@ -6,7 +6,7 @@ if (!window.supabase) {
   throw new Error('Supabase CDN not loaded');
 }
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const AVATAR_COLORS = [
   ['#1a3a1a','#B4FF6A'],['#1a2a3a','#7ab8f5'],['#2a1a3a','#c9a6ff'],
@@ -29,7 +29,7 @@ function formatDate(iso) {
 
 // --- AUTH ---
 
-supabase.auth.onAuthStateChange((event, session) => {
+db.auth.onAuthStateChange((event, session) => {
   if (session) {
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('userEmail').textContent = session.user.email;
@@ -49,7 +49,7 @@ async function handleLogin() {
   btn.textContent = 'Sending...';
   btn.disabled = true;
 
-  const { error } = await supabase.auth.signInWithOtp({
+  const { error } = await db.auth.signInWithOtp({
     email,
     options: { emailRedirectTo: 'https://techtank-rho.vercel.app/dashboard.html' }
   });
@@ -70,10 +70,9 @@ async function handleLogin() {
 }
 
 async function handleSignOut() {
-  await supabase.auth.signOut();
+  await db.auth.signOut();
   document.getElementById('loginOverlay').style.display = 'flex';
   document.getElementById('loginEmail').value = '';
-  document.getElementById('loginPassword').value = '';
   allApplicants = [];
   filteredData = [];
   renderTable([]);
@@ -82,7 +81,7 @@ async function handleSignOut() {
 // --- DATA ---
 
 async function loadApplicants() {
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('applications')
     .select('*')
     .order('created_at', { ascending: false });
@@ -243,10 +242,10 @@ function openDrawer(a, bg, color) {
     <div class="drawer-section">
       <div class="drawer-section-title">Status</div>
       <div class="drawer-status-row">
-        <button class="status-btn ${s==='New'?'active-green':''}"        onclick="setStatus(this,'New')">New</button>
-        <button class="status-btn ${s==='Reviewed'?'active-blue':''}"    onclick="setStatus(this,'Reviewed')">Reviewed</button>
+        <button class="status-btn ${s==='New'?'active-green':''}"          onclick="setStatus(this,'New')">New</button>
+        <button class="status-btn ${s==='Reviewed'?'active-blue':''}"      onclick="setStatus(this,'Reviewed')">Reviewed</button>
         <button class="status-btn ${s==='Shortlisted'?'active-purple':''}" onclick="setStatus(this,'Shortlisted')">Shortlisted</button>
-        <button class="status-btn ${s==='Passed'?'active-gray':''}"      onclick="setStatus(this,'Passed')">Passed</button>
+        <button class="status-btn ${s==='Passed'?'active-gray':''}"        onclick="setStatus(this,'Passed')">Passed</button>
       </div>
     </div>
 
@@ -307,23 +306,21 @@ async function setStatus(btn, status) {
 
   if (!currentApplicant) return;
   currentApplicant.status = status;
-
-  await supabase.from('applications').update({ status }).eq('id', currentApplicant.id);
+  await db.from('applications').update({ status }).eq('id', currentApplicant.id);
 
   const idx = allApplicants.findIndex(a => a.id === currentApplicant.id);
   if (idx !== -1) allApplicants[idx].status = status;
-  renderTable(filteredData.map(a => a.id === currentApplicant.id ? { ...a, status } : a));
+  filteredData = filteredData.map(a => a.id === currentApplicant.id ? { ...a, status } : a);
+  renderTable(filteredData);
   updateStats();
 }
 
 async function saveNotes() {
   if (!currentApplicant) return;
   const notes = document.getElementById('drawerNotes').value;
-  await supabase.from('applications').update({ notes }).eq('id', currentApplicant.id);
+  await db.from('applications').update({ notes }).eq('id', currentApplicant.id);
   const idx = allApplicants.findIndex(a => a.id === currentApplicant.id);
   if (idx !== -1) allApplicants[idx].notes = notes;
-  const btn = document.querySelector('.drawer-notes + button');
+  const btn = document.querySelector('#drawerNotes + button');
   if (btn) { btn.textContent = 'Saved ✓'; setTimeout(() => btn.textContent = 'Save notes', 1500); }
 }
-
-// --- INIT --- (auth handled by onAuthStateChange above)
