@@ -142,6 +142,7 @@ document.querySelectorAll('.upload-zone').forEach(zone => {
     zone.style.borderColor = '';
     const file = e.dataTransfer.files[0];
     if (file) {
+      if (zone.id === 'deckZone') selectedDeckFile = file;
       zone.classList.add('has-file');
       zone.querySelector('p').textContent = `✓ ${file.name}`;
       zone.querySelector('span').textContent = `${(file.size / 1024 / 1024).toFixed(1)} MB`;
