@@ -324,3 +324,31 @@ async function saveNotes() {
   const btn = document.querySelector('#drawerNotes + button');
   if (btn) { btn.textContent = 'Saved ✓'; setTimeout(() => btn.textContent = 'Save notes', 1500); }
 }
+
+// --- SIDEBAR NAV ---
+
+document.querySelectorAll('.db-nav__item').forEach(item => {
+  item.addEventListener('click', e => {
+    e.preventDefault();
+    const text = item.textContent.trim();
+
+    if (text.includes('AI search')) { toggleAI(); return; }
+
+    document.querySelectorAll('.db-nav__item').forEach(i => i.classList.remove('db-nav__item--active'));
+    item.classList.add('db-nav__item--active');
+
+    if (text.includes('All')) {
+      filteredData = [...allApplicants];
+      document.querySelector('.db-topbar__left h1').textContent = 'All applicants';
+    } else if (text.includes('Shortlisted')) {
+      filteredData = allApplicants.filter(a => a.status === 'Shortlisted');
+      document.querySelector('.db-topbar__left h1').textContent = 'Shortlisted';
+    } else if (text.includes('Pending')) {
+      filteredData = allApplicants.filter(a => a.status === 'New');
+      document.querySelector('.db-topbar__left h1').textContent = 'Pending review';
+    }
+
+    document.querySelector('.db-count').textContent = `${filteredData.length} total`;
+    renderTable(filteredData);
+  });
+});
