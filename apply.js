@@ -83,6 +83,10 @@ document.getElementById('applyForm').addEventListener('submit', async e => {
     console.log('Upload result:', uploadData, uploadError);
     if (uploadError) {
       console.error('Upload error:', uploadError);
+      submitBtn.textContent = 'Submit application →';
+      submitBtn.disabled = false;
+      alert('File upload failed: ' + uploadError.message + '\n\nYou can still submit without a file.');
+      deck_url = null;
     } else {
       const { data: urlData } = db.storage.from('pitch-decks').getPublicUrl(path);
       deck_url = urlData.publicUrl;
