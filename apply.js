@@ -19,6 +19,7 @@ async function loadGroup() {
     return;
   }
   const { data, error } = await db.from('groups').select('*').eq('slug', slug).single();
+  console.log('Group load result:', data, error);
   if (error || !data) {
     document.getElementById('groupName').textContent = 'Unknown Group';
     document.getElementById('groupDesc').textContent = 'This apply link is invalid or expired.';
@@ -91,6 +92,12 @@ function handleFileSelect(input, zoneId) {
 document.getElementById('applyForm').addEventListener('submit', async e => {
   e.preventDefault();
   if (!validateStep(4)) return;
+
+  console.log('currentGroup at submit:', currentGroup);
+  if (!currentGroup) {
+    alert('Group not loaded — please refresh the page and try again.');
+    return;
+  }
 
   const submitBtn = document.querySelector('[type="submit"]');
   submitBtn.textContent = 'Submitting...';
