@@ -3,7 +3,8 @@
     "allow": [
       "mcp__Claude_in_Chrome__tabs_context_mcp",
       "Bash(gh auth *)",
-      "Bash(npx vercel *)"
+      "Bash(npx vercel *)",
+      "WebFetch(domain:dealflowmanager.com)"
     ]
   }
 }

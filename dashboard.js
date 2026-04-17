@@ -356,6 +356,11 @@ function openDrawer(a, bg, color) {
     </div>
 
     <div class="drawer-section">
+      <div class="drawer-section-title">Diligence</div>
+      <button class="btn btn--primary" style="font-size:13px;padding:9px 18px;width:100%" onclick="generateReport(currentApplicant)">✦ Generate diligence report</button>
+    </div>
+
+    <div class="drawer-section">
       <div class="drawer-section-title">Notes</div>
       <textarea class="drawer-notes" id="drawerNotes" placeholder="Add notes about this applicant...">${a.notes||''}</textarea>
       <button class="btn btn--ghost" style="font-size:12px;padding:7px 16px;margin-top:8px" onclick="saveNotes()">Save notes</button>
@@ -396,6 +401,173 @@ async function saveNotes() {
   if (idx !== -1) allApplicants[idx].notes = notes;
   const btn = document.querySelector('#drawerNotes + button');
   if (btn) { btn.textContent = 'Saved ✓'; setTimeout(() => btn.textContent = 'Save notes', 1500); }
+}
+
+// --- DILIGENCE REPORT ---
+
+function generateReport(a) {
+  const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Diligence Report — ${a.company_name || a.first_name + ' ' + a.last_name}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Georgia', serif; background: #fff; color: #1a1a1a; padding: 48px; max-width: 820px; margin: 0 auto; font-size: 14px; line-height: 1.6; }
+    .report-header { border-bottom: 2px solid #1a1a1a; padding-bottom: 20px; margin-bottom: 32px; }
+    .report-header__top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .report-brand { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #666; }
+    .report-confidential { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #999; border: 1px solid #ccc; padding: 3px 10px; border-radius: 4px; }
+    .report-title { margin-top: 16px; }
+    .report-title h1 { font-size: 28px; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .report-title p { font-size: 12px; color: #666; }
+    .section { margin-bottom: 28px; page-break-inside: avoid; }
+    .section__title { font-family: sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #666; border-bottom: 0.5px solid #ddd; padding-bottom: 6px; margin-bottom: 14px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .field { margin-bottom: 10px; }
+    .field__label { font-family: sans-serif; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #999; margin-bottom: 2px; }
+    .field__value { font-size: 13px; color: #1a1a1a; }
+    .field__value--long { font-size: 13px; color: #333; line-height: 1.65; white-space: pre-wrap; }
+    .badge { display: inline-block; font-family: sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; background: #f0f0f0; color: #444; margin: 2px; }
+    .highlight-box { background: #f8f8f8; border-left: 3px solid #1a1a1a; padding: 14px 18px; border-radius: 0 4px 4px 0; }
+    .report-footer { margin-top: 40px; padding-top: 16px; border-top: 0.5px solid #ddd; font-family: sans-serif; font-size: 11px; color: #999; display: flex; justify-content: space-between; }
+    @media print {
+      body { padding: 24px; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="report-header">
+    <div class="report-header__top">
+      <div class="report-brand">DealFlow — Investment Diligence Report</div>
+      <div class="report-confidential">Confidential</div>
+    </div>
+    <div class="report-title">
+      <h1>${a.company_name || (a.first_name + ' ' + a.last_name)}</h1>
+      <p>Generated ${date} · Reviewed by ${userGroup ? userGroup.name : 'Investment Team'}</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section__title">Executive Summary</div>
+    <div class="highlight-box">
+      <div class="field__value--long">${a.value_proposition || a.description || '—'}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section__title">Deal Overview</div>
+    <div class="grid-3">
+      <div class="field"><div class="field__label">Raise Target</div><div class="field__value">${a.capital_raise_target || a.raising || '—'}</div></div>
+      <div class="field"><div class="field__label">Pre-Money Val.</div><div class="field__value">${a.pre_money_valuation || '—'}</div></div>
+      <div class="field"><div class="field__label">Funding Type</div><div class="field__value">${a.funding_type || '—'}</div></div>
+      <div class="field"><div class="field__label">Raised to Date</div><div class="field__value">${a.capital_raised_to_date || a.committed || '—'}</div></div>
+      <div class="field"><div class="field__label">Trailing Revenue</div><div class="field__value">${a.trailing_revenue || a.revenue || '—'}</div></div>
+      <div class="field"><div class="field__label">Target Close</div><div class="field__value">${a.target_closing_date || '—'}</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section__title">Company Information</div>
+    <div class="grid-2">
+      <div class="field"><div class="field__label">Legal Name</div><div class="field__value">${a.company_legal_name || a.company_name || '—'}</div></div>
+      <div class="field"><div class="field__label">CEO</div><div class="field__value">${a.ceo_name || '—'}</div></div>
+      <div class="field"><div class="field__label">Year Founded</div><div class="field__value">${a.year_founded || '—'}</div></div>
+      <div class="field"><div class="field__label">Employees</div><div class="field__value">${a.num_employees || '—'}</div></div>
+      <div class="field"><div class="field__label">Industry</div><div class="field__value">${a.industry || a.sector || '—'}</div></div>
+      <div class="field"><div class="field__label">Website</div><div class="field__value">${a.website ? '<a href="'+a.website+'" style="color:#1a1a1a">'+a.website+'</a>' : '—'}</div></div>
+      <div class="field"><div class="field__label">Location</div><div class="field__value">${[a.city_town, a.state_region, a.country].filter(Boolean).join(', ') || a.location || '—'}</div></div>
+      <div class="field"><div class="field__label">Stage</div><div class="field__value">${a.business_stage || a.stage || '—'}</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section__title">Product & Technology</div>
+    <div class="field"><div class="field__label">Product / Service</div><div class="field__value--long">${a.description || '—'}</div></div>
+    <div class="field" style="margin-top:12px"><div class="field__label">Intellectual Property</div><div class="field__value--long">${a.intellectual_property || '—'}</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section__title">Market Opportunity</div>
+    <div class="field"><div class="field__label">Target Market</div><div class="field__value--long">${a.target_market || '—'}</div></div>
+    <div class="field" style="margin-top:12px"><div class="field__label">Customers</div><div class="field__value--long">${a.customers || '—'}</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section__title">Business Model & Go-to-Market</div>
+    <div class="field"><div class="field__label">Business Model</div><div class="field__value--long">${a.business_model_detail || '—'}</div></div>
+    <div class="field" style="margin-top:12px"><div class="field__label">Sales & Marketing Strategy</div><div class="field__value--long">${a.sales_marketing || '—'}</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section__title">Competitive Landscape</div>
+    <div class="grid-2">
+      <div class="field"><div class="field__label">Competitors</div><div class="field__value--long">${a.competitors || '—'}</div></div>
+      <div class="field"><div class="field__label">Competitive Advantage</div><div class="field__value--long">${a.competitive_advantage || '—'}</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section__title">Financing Details</div>
+    <div class="field"><div class="field__label">Lead Investor</div><div class="field__value">${a.lead_investor || '—'}</div></div>
+    <div class="field" style="margin-top:8px"><div class="field__label">Previous Investors</div><div class="field__value--long">${a.previous_investors || a.prior_funding || '—'}</div></div>
+    <div class="field" style="margin-top:8px"><div class="field__label">Terms / Conditions</div><div class="field__value--long">${a.terms_conditions || '—'}</div></div>
+    <div class="field" style="margin-top:8px"><div class="field__label">Use of Proceeds</div><div class="field__value--long">${a.use_of_proceeds || '—'}</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section__title">Risk Factors & Exit</div>
+    <div class="grid-2">
+      <div class="field"><div class="field__label">Key Risks</div><div class="field__value--long">${a.risks || '—'}</div></div>
+      <div class="field"><div class="field__label">Exit Strategy</div><div class="field__value--long">${a.exit_strategy || '—'}</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section__title">Team</div>
+    <div class="grid-2">
+      <div class="field"><div class="field__label">Primary Contact</div><div class="field__value">${a.first_name} ${a.last_name} · ${a.role || '—'}</div></div>
+      <div class="field"><div class="field__label">Email</div><div class="field__value">${a.email || '—'}</div></div>
+      <div class="field"><div class="field__label">Phone</div><div class="field__value">${a.phone || '—'}</div></div>
+      <div class="field"><div class="field__label">LinkedIn</div><div class="field__value">${a.linkedin || '—'}</div></div>
+    </div>
+    ${a.management_linkedin ? '<div class="field" style="margin-top:8px"><div class="field__label">Management LinkedIn</div><div class="field__value--long">'+a.management_linkedin+'</div></div>' : ''}
+    ${a.referred_by ? '<div class="field" style="margin-top:8px"><div class="field__label">Referred By</div><div class="field__value">'+a.referred_by+'</div></div>' : ''}
+  </div>
+
+  <div class="section">
+    <div class="section__title">Materials</div>
+    <div class="grid-2">
+      <div class="field"><div class="field__label">Documents Provided</div><div class="field__value">${a.required_documents || '—'}</div></div>
+      <div class="field"><div class="field__label">Supporting Docs</div><div class="field__value">${a.supporting_docs_url ? '<a href="'+a.supporting_docs_url+'" style="color:#1a1a1a">View documents →</a>' : '—'}</div></div>
+    </div>
+    ${a.deck_url ? '<div class="field" style="margin-top:8px"><div class="field__label">Pitch Deck</div><div class="field__value"><a href="'+a.deck_url+'" style="color:#1a1a1a">View pitch deck →</a></div></div>' : ''}
+  </div>
+
+  ${a.notes ? `<div class="section">
+    <div class="section__title">Investor Notes</div>
+    <div class="highlight-box"><div class="field__value--long">${a.notes}</div></div>
+  </div>` : ''}
+
+  <div class="report-footer">
+    <span>DealFlow — Confidential Investment Diligence Report</span>
+    <span>Applied ${formatDate(a.created_at)} · Status: ${a.status || 'New'}</span>
+  </div>
+
+  <div class="no-print" style="margin-top:32px;text-align:center">
+    <button onclick="window.print()" style="font-family:sans-serif;font-size:13px;padding:10px 24px;background:#1a1a1a;color:#fff;border:none;border-radius:6px;cursor:pointer">Print / Save as PDF</button>
+  </div>
+
+</body>
+</html>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
 }
 
 // --- SIDEBAR NAV ---
