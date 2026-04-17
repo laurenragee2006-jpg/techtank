@@ -30,6 +30,8 @@ async function loadGroup() {
   document.getElementById('groupName').textContent = data.name;
   document.getElementById('groupDesc').textContent = data.description;
   document.getElementById('groupPrivacyNote').textContent = `Your data is only visible to ${data.name} investors.`;
+  document.getElementById('whyLabel').textContent = `Why are you applying to ${data.name}?`;
+  document.getElementById('successGroupName').textContent = data.name;
 }
 
 loadGroup();
@@ -157,6 +159,19 @@ document.getElementById('applyForm').addEventListener('submit', async e => {
     console.error(error);
     return;
   }
+
+  // Send confirmation email to founder
+  const founderEmail = document.getElementById('email').value.trim();
+  const founderName = document.getElementById('firstName').value.trim();
+  fetch('/api/confirm-application', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      to: founderEmail,
+      founderName,
+      groupName: currentGroup.name
+    })
+  }).catch(() => {}); // fire and forget
 
   document.getElementById('step-4').style.display = 'none';
   document.getElementById('formSuccess').style.display = 'block';

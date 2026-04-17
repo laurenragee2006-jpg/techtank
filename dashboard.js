@@ -179,7 +179,14 @@ function renderTable(data) {
   tbody.innerHTML = '';
 
   if (data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--text-dim)">No applicants found.</td></tr>`;
+    const isFiltered = allApplicants.length > 0;
+    tbody.innerHTML = `<tr><td colspan="8">
+      <div style="text-align:center;padding:4rem 2rem;color:var(--text-dim)">
+        <div style="font-size:24px;margin-bottom:0.75rem">${isFiltered ? '🔍' : '📭'}</div>
+        <div style="font-size:14px;font-weight:500;color:var(--text-muted);margin-bottom:0.4rem">${isFiltered ? 'No applicants match this filter' : 'No applications yet'}</div>
+        <div style="font-size:12px">${isFiltered ? 'Try a different filter or search term' : 'Share your apply link to start receiving applications'}</div>
+      </div>
+    </td></tr>`;
     return;
   }
 
