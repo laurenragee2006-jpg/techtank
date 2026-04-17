@@ -650,7 +650,6 @@ img { display: block; max-width: 100%; }
     padding: 4rem 1.5rem 3rem;
     gap: 3rem;
   }
-  .hero__visual { order: -1; }
   .hero__sub { max-width: 100%; }
 
   .flow {
