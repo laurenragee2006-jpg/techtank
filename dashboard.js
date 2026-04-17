@@ -267,9 +267,19 @@ function runAIQuery() {
   result.textContent = 'Thinking...';
 
   setTimeout(() => {
-    const words = q.replace(/[^a-z0-9 ]/g, '').split(' ').filter(w => w.length > 2);
+    const words = q.replace(/[^a-z0-9 ]/g, '').split(' ').filter(w => w.length > 1);
     const matches = allApplicants.filter(a => {
-      const blob = `${a.sector} ${a.stage} ${a.location} ${a.description} ${a.traction} ${a.status}`.toLowerCase();
+      const blob = [
+        a.first_name, a.last_name, a.company_name, a.company_legal_name,
+        a.ceo_name, a.email, a.role, a.location, a.city_town, a.state_region, a.country,
+        a.industry, a.sector, a.stage, a.business_stage, a.status,
+        a.value_proposition, a.description, a.target_market, a.business_model_detail,
+        a.customers, a.competitors, a.competitive_advantage,
+        a.capital_raise_target, a.raising, a.funding_type,
+        a.lead_investor, a.previous_investors, a.prior_funding,
+        a.traction, a.trailing_revenue, a.revenue,
+        a.exit_strategy, a.risks, a.referred_by, a.notes
+      ].filter(Boolean).join(' ').toLowerCase();
       return words.some(w => blob.includes(w));
     });
 
@@ -281,7 +291,7 @@ function runAIQuery() {
     result.innerHTML = `
       <strong style="color:var(--accent);font-size:12px;">✦ AI result</strong><br><br>
       Found <strong>${matches.length}</strong> applicant${matches.length !== 1 ? 's' : ''} matching your query:<br><br>
-      ${matches.slice(0, 5).map(a => `<span style="color:var(--text)">→ ${a.first_name} ${a.last_name}</span> — ${a.company_name} (${a.sector}, ${a.stage}, ${a.location})`).join('<br>')}
+      ${matches.slice(0, 5).map(a => `<span style="color:var(--text)">→ ${a.first_name} ${a.last_name}</span> — ${a.company_name || a.company_legal_name || '—'} · ${a.industry || a.sector || '—'} · ${a.business_stage || a.stage || '—'} · ${a.location || a.city_town || '—'}`).join('<br>')}
       ${matches.length > 5 ? `<br><span style="color:var(--text-dim)">...and ${matches.length - 5} more</span>` : ''}
     `;
     renderTable(matches);
