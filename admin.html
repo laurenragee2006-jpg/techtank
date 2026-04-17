@@ -251,13 +251,28 @@
       panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
     }
 
+    function makeTempPassword() {
+      const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+      let pass = '';
+      for (let i = 0; i < 8; i++) pass += chars[Math.floor(Math.random() * chars.length)];
+      return pass + 'A1!';
+    }
+
     async function confirmApprove(id, name, email, description) {
       const slug = document.getElementById(`slug-${id}`).value.trim();
       if (!slug) { alert('Please enter a slug.'); return; }
 
-      const btn = document.querySelector(`#req-${id} .btn--approve`);
-      btn.textContent = 'Approving...';
-      btn.disabled = true;
+      const confirmBtn = document.querySelector(`#approve-panel-${id} .btn--approve`);
+      confirmBtn.textContent = 'Approving...';
+      confirmBtn.disabled = true;
+
+      // Generate a temp password and create their dashboard account
+      const tempPass = makeTempPassword();
+      const tempClient = window.supabase.createClient(
+        'https://fqqyguufldcvckyaqzxw.supabase.co',
+        'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr'
+      );
+      await tempClient.auth.signUp({ email, password: tempPass });
 
       // Create the group
       const { error: groupError } = await db.from('groups').insert({
@@ -266,24 +281,64 @@
 
       if (groupError) {
         alert('Error creating group: ' + groupError.message);
-        btn.textContent = 'Approve';
-        btn.disabled = false;
+        confirmBtn.textContent = 'Confirm →';
+        confirmBtn.disabled = false;
         return;
       }
 
       // Mark request as approved
       await db.from('group_requests').update({ status: 'approved' }).eq('id', id);
 
-      // Show apply link
       const applyLink = `${BASE_URL}/apply.html?g=${slug}`;
+      const dashLink = `${BASE_URL}/dashboard.html`;
+
+      const emailBody = encodeURIComponent(
+`Hi ${name} team,
+
+Your DealFlow group has been approved! Here's everything you need:
+
+📋 Application form (share this link with founders):
+${applyLink}
+
+📊 Investor dashboard (your private review portal):
+${dashLink}
+
+🔐 Login credentials:
+Email: ${email}
+Temporary password: ${tempPass}
+
+Sign in at the dashboard link above and change your password after first login.
+
+Let us know if you have any questions!
+
+— The DealFlow Team`
+      );
+
+      const mailtoLink = `mailto:${email}?subject=Your DealFlow group is live!&body=${emailBody}`;
+
       document.getElementById(`req-${id}`).innerHTML = `
         <div style="padding:0.5rem 0">
-          <div style="font-size:13px;color:var(--accent);margin-bottom:0.75rem">✓ ${name} approved</div>
-          <div class="group-card__link-row">
+          <div style="font-size:13px;color:var(--accent);margin-bottom:1rem">✓ ${name} approved</div>
+
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Apply link</div>
+          <div class="group-card__link-row" style="margin-bottom:0.75rem">
             <span>${applyLink}</span>
-            <button class="copy-btn" onclick="copyText('${applyLink}', this)">Copy apply link</button>
+            <button class="copy-btn" onclick="copyText('${applyLink}', this)">Copy</button>
           </div>
-          <div style="font-size:12px;color:var(--text-dim);margin-top:0.5rem">Dashboard: ${BASE_URL}/dashboard.html · Send both links to ${email}</div>
+
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Dashboard link</div>
+          <div class="group-card__link-row" style="margin-bottom:0.75rem">
+            <span>${dashLink}</span>
+            <button class="copy-btn" onclick="copyText('${dashLink}', this)">Copy</button>
+          </div>
+
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Temp password</div>
+          <div class="group-card__link-row" style="margin-bottom:1rem">
+            <span style="font-family:monospace">${tempPass}</span>
+            <button class="copy-btn" onclick="copyText('${tempPass}', this)">Copy</button>
+          </div>
+
+          <a href="${mailtoLink}" class="btn--approve" style="display:inline-block;text-decoration:none;padding:8px 18px">✉ Send approval email →</a>
         </div>
       `;
 
@@ -317,9 +372,15 @@
               <div class="group-card__meta">${g.owner_email} · slug: ${g.slug}</div>
             </div>
           </div>
-          <div class="group-card__link-row">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Apply link</div>
+          <div class="group-card__link-row" style="margin-bottom:0.75rem">
             <span>${BASE_URL}/apply.html?g=${g.slug}</span>
-            <button class="copy-btn" onclick="copyText('${BASE_URL}/apply.html?g=${g.slug}', this)">Copy link</button>
+            <button class="copy-btn" onclick="copyText('${BASE_URL}/apply.html?g=${g.slug}', this)">Copy</button>
+          </div>
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Dashboard link</div>
+          <div class="group-card__link-row">
+            <span>${BASE_URL}/dashboard.html</span>
+            <button class="copy-btn" onclick="copyText('${BASE_URL}/dashboard.html', this)">Copy</button>
           </div>
         </div>
       `).join('');
