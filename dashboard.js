@@ -65,7 +65,7 @@ async function handleLogin() {
 
   const { error } = await db.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: 'https://techtank-rho.vercel.app/dashboard.html' }
+    options: { emailRedirectTo: 'https://getdealflow-app.vercel.app/dashboard.html' }
   });
 
   if (error) {
