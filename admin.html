@@ -378,12 +378,21 @@ Let us know if you have any questions!
             <button class="copy-btn" onclick="copyText('${BASE_URL}/apply.html?g=${g.slug}', this)">Copy</button>
           </div>
           <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Dashboard link</div>
-          <div class="group-card__link-row">
+          <div class="group-card__link-row" style="margin-bottom:0.75rem">
             <span>${BASE_URL}/dashboard.html</span>
             <button class="copy-btn" onclick="copyText('${BASE_URL}/dashboard.html', this)">Copy</button>
           </div>
+          <button class="copy-btn" onclick="sendReset('${g.owner_email}')" style="font-size:12px;padding:6px 14px">↺ Send password reset email</button>
         </div>
       `).join('');
+    }
+
+    async function sendReset(email) {
+      const { error } = await db.auth.resetPasswordForEmail(email, {
+        redirectTo: `${BASE_URL}/dashboard.html`
+      });
+      if (error) { alert('Error: ' + error.message); return; }
+      alert(`Password reset email sent to ${email}`);
     }
 
     function copyText(text, btn) {
