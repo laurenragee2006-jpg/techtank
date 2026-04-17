@@ -13,77 +13,89 @@
     body { min-height: 100vh; background: var(--bg); padding: 2rem; }
 
     .admin-header {
-      max-width: 900px;
-      margin: 0 auto 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      max-width: 900px; margin: 0 auto 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
     }
     .admin-header__logo { font-family: var(--font-serif); font-size: 1.1rem; color: var(--text); text-decoration: none; }
     .admin-header__logo span { color: var(--accent); }
-    .admin-header h1 { font-family: var(--font-sans); font-size: 1rem; color: var(--text-muted); font-weight: 400; }
-
     .admin-wrap { max-width: 900px; margin: 0 auto; }
 
-    .admin-title { font-family: var(--font-serif); font-size: 2rem; color: var(--text); margin-bottom: 0.5rem; }
-    .admin-sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+    .section-block { margin-bottom: 3rem; }
+    .section-block__title { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
 
-    .group-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
+    /* Request card */
+    .req-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.5rem;
+      margin-bottom: 0.75rem; transition: border-color 0.2s;
+    }
+    .req-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+    .req-card__name { font-size: 1rem; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+    .req-card__email { font-size: 12px; color: var(--text-muted); }
+    .req-card__desc { font-size: 13px; color: var(--text-muted); margin-top: 0.75rem; line-height: 1.5; }
+    .req-card__actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+    .btn--approve {
+      font-family: var(--font-sans); font-size: 12px; padding: 6px 14px;
+      border-radius: var(--radius-pill); border: 0.5px solid rgba(180,255,106,0.4);
+      background: rgba(180,255,106,0.1); color: var(--accent);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .btn--approve:hover { background: rgba(180,255,106,0.2); }
+
+    .btn--deny {
+      font-family: var(--font-sans); font-size: 12px; padding: 6px 14px;
+      border-radius: var(--radius-pill); border: 0.5px solid rgba(255,80,80,0.3);
+      background: transparent; color: rgba(255,100,100,0.8);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .btn--deny:hover { background: rgba(255,80,80,0.1); }
+
+    /* Slug edit row */
+    .slug-row {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-top: 1rem; padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .slug-row label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+    .slug-row input {
+      flex: 1; background: var(--bg-card-2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 7px 10px;
+      color: var(--text); font-family: monospace; font-size: 13px; outline: none;
       transition: border-color 0.2s;
     }
-    .group-card:hover { border-color: rgba(255,255,255,0.15); }
+    .slug-row input:focus { border-color: rgba(180,255,106,0.4); }
 
-    .group-card__top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
+    /* Group card */
+    .group-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.5rem;
+      margin-bottom: 0.75rem;
     }
-    .group-card__name { font-family: var(--font-sans); font-size: 1rem; font-weight: 500; color: var(--text); }
+    .group-card__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .group-card__name { font-size: 1rem; font-weight: 500; color: var(--text); }
     .group-card__meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
     .group-card__link-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      background: var(--bg-card-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
+      display: flex; align-items: center; gap: 0.75rem;
+      background: var(--bg-card-2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 14px;
     }
     .group-card__link-row span {
-      font-size: 13px;
-      color: var(--blue);
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-family: monospace;
+      font-size: 13px; color: var(--blue); flex: 1;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: monospace;
     }
     .copy-btn {
-      font-family: var(--font-sans);
-      font-size: 12px;
-      padding: 5px 12px;
-      border-radius: var(--radius-pill);
-      border: 0.5px solid var(--border);
-      background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-      flex-shrink: 0;
+      font-family: var(--font-sans); font-size: 12px; padding: 5px 12px;
+      border-radius: var(--radius-pill); border: 0.5px solid var(--border);
+      background: transparent; color: var(--text-muted);
+      cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
     }
-    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .copy-btn.copied { border-color: var(--accent); color: var(--accent); }
+    .copy-btn:hover, .copy-btn.copied { border-color: var(--accent); color: var(--accent); }
 
-    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+    .empty-state { text-align: center; padding: 2.5rem; color: var(--text-dim); font-size: 13px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); }
 
-    /* Login overlay reuse */
+    /* Login */
     .login-overlay {
       position: fixed; inset: 0; background: var(--bg);
       display: flex; align-items: center; justify-content: center; z-index: 1000;
@@ -136,32 +148,38 @@
   </div>
 
   <div class="admin-wrap">
-    <h1 class="admin-title">Your groups</h1>
-    <p class="admin-sub">Copy an apply link and send it to the group. Anyone with the link can submit an application.</p>
 
-    <div id="groupsList">
-      <div class="empty-state">Loading...</div>
+    <div class="section-block">
+      <div class="section-block__title">Pending requests</div>
+      <div id="requestsList"><div class="empty-state">Loading...</div></div>
     </div>
+
+    <div class="section-block">
+      <div class="section-block__title">Active groups</div>
+      <div id="groupsList"><div class="empty-state">Loading...</div></div>
+    </div>
+
   </div>
 
   <script>
     const BASE_URL = 'https://getdealflow-app.vercel.app';
+    const ADMIN_EMAIL = 'laurenragee2006@gmail.com';
+
     const db = window.supabase.createClient(
       'https://fqqyguufldcvckyaqzxw.supabase.co',
       'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr'
     );
 
-    const ADMIN_EMAIL = 'laurenragee2006@gmail.com';
-
     db.auth.onAuthStateChange((event, session) => {
       if (session) {
         if (session.user.email !== ADMIN_EMAIL) {
-          document.getElementById('groupsList').innerHTML = '<div class="empty-state">Access denied.</div>';
+          document.getElementById('requestsList').innerHTML = '<div class="empty-state">Access denied.</div>';
+          document.getElementById('groupsList').innerHTML = '';
           document.getElementById('loginOverlay').style.display = 'none';
           return;
         }
         document.getElementById('loginOverlay').style.display = 'none';
-        setTimeout(loadGroups, 500);
+        setTimeout(() => { loadRequests(); loadGroups(); }, 500);
       } else {
         document.getElementById('loginOverlay').style.display = 'flex';
       }
@@ -169,59 +187,149 @@
 
     async function handleLogin() {
       const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
       const errEl = document.getElementById('loginError');
       const btn = document.querySelector('.login-card .btn--primary');
-      if (!email) return;
-
+      if (!email || !password) return;
       errEl.style.display = 'none';
-      btn.textContent = 'Sending...';
+      btn.textContent = 'Signing in...';
       btn.disabled = true;
-
-      const password = document.getElementById('loginPassword').value;
       const { error } = await db.auth.signInWithPassword({ email, password });
-
       if (error) {
         errEl.textContent = 'Invalid email or password.';
         errEl.style.display = 'block';
         btn.textContent = 'Sign in →';
         btn.disabled = false;
-        return;
       }
     }
 
-    async function loadGroups() {
-      const { data, error } = await db.from('groups').select('*').order('created_at', { ascending: false });
+    // --- REQUESTS ---
 
-      const list = document.getElementById('groupsList');
+    async function loadRequests() {
+      const { data } = await db.from('group_requests')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
 
-      if (error || !data || data.length === 0) {
-        list.innerHTML = '<div class="empty-state">No groups yet. Add one in Supabase → Table Editor → groups.</div>';
+      const el = document.getElementById('requestsList');
+
+      if (!data || data.length === 0) {
+        el.innerHTML = '<div class="empty-state">No pending requests.</div>';
         return;
       }
 
-      list.innerHTML = data.map(g => `
+      el.innerHTML = data.map(r => `
+        <div class="req-card" id="req-${r.id}">
+          <div class="req-card__top">
+            <div>
+              <div class="req-card__name">${r.fund_name}</div>
+              <div class="req-card__email">${r.contact_email}</div>
+            </div>
+            <div class="req-card__actions">
+              <button class="btn--approve" onclick="openApprove('${r.id}', '${r.fund_name}', '${r.contact_email}', '${r.description||''}')">Approve</button>
+              <button class="btn--deny" onclick="denyRequest('${r.id}')">Deny</button>
+            </div>
+          </div>
+          ${r.description ? `<div class="req-card__desc">${r.description}</div>` : ''}
+          <div id="approve-panel-${r.id}" style="display:none">
+            <div class="slug-row">
+              <label>URL slug:</label>
+              <input type="text" id="slug-${r.id}" value="${toSlug(r.fund_name)}" placeholder="e.g. horizon-ventures" />
+              <button class="btn--approve" onclick="confirmApprove('${r.id}', '${r.fund_name}', '${r.contact_email}', '${r.description||''}')">Confirm →</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toSlug(name) {
+      return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    }
+
+    function openApprove(id) {
+      const panel = document.getElementById(`approve-panel-${id}`);
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function confirmApprove(id, name, email, description) {
+      const slug = document.getElementById(`slug-${id}`).value.trim();
+      if (!slug) { alert('Please enter a slug.'); return; }
+
+      const btn = document.querySelector(`#req-${id} .btn--approve`);
+      btn.textContent = 'Approving...';
+      btn.disabled = true;
+
+      // Create the group
+      const { error: groupError } = await db.from('groups').insert({
+        name, slug, owner_email: email, description: description || ''
+      });
+
+      if (groupError) {
+        alert('Error creating group: ' + groupError.message);
+        btn.textContent = 'Approve';
+        btn.disabled = false;
+        return;
+      }
+
+      // Mark request as approved
+      await db.from('group_requests').update({ status: 'approved' }).eq('id', id);
+
+      // Show apply link
+      const applyLink = `${BASE_URL}/apply.html?g=${slug}`;
+      document.getElementById(`req-${id}`).innerHTML = `
+        <div style="padding:0.5rem 0">
+          <div style="font-size:13px;color:var(--accent);margin-bottom:0.75rem">✓ ${name} approved</div>
+          <div class="group-card__link-row">
+            <span>${applyLink}</span>
+            <button class="copy-btn" onclick="copyText('${applyLink}', this)">Copy apply link</button>
+          </div>
+          <div style="font-size:12px;color:var(--text-dim);margin-top:0.5rem">Dashboard: ${BASE_URL}/dashboard.html · Send both links to ${email}</div>
+        </div>
+      `;
+
+      loadGroups();
+    }
+
+    async function denyRequest(id) {
+      if (!confirm('Deny this request?')) return;
+      await db.from('group_requests').update({ status: 'denied' }).eq('id', id);
+      document.getElementById(`req-${id}`).style.opacity = '0.4';
+      document.getElementById(`req-${id}`).style.pointerEvents = 'none';
+      setTimeout(() => { document.getElementById(`req-${id}`).remove(); loadRequests(); }, 600);
+    }
+
+    // --- GROUPS ---
+
+    async function loadGroups() {
+      const { data } = await db.from('groups').select('*').order('created_at', { ascending: false });
+      const el = document.getElementById('groupsList');
+
+      if (!data || data.length === 0) {
+        el.innerHTML = '<div class="empty-state">No active groups yet.</div>';
+        return;
+      }
+
+      el.innerHTML = data.map(g => `
         <div class="group-card">
           <div class="group-card__top">
             <div>
               <div class="group-card__name">${g.name}</div>
               <div class="group-card__meta">${g.owner_email} · slug: ${g.slug}</div>
             </div>
-            <a href="dashboard.html" class="btn btn--ghost" style="font-size:12px;padding:6px 14px">View dashboard →</a>
           </div>
           <div class="group-card__link-row">
-            <span id="link-${g.slug}">${BASE_URL}/apply.html?g=${g.slug}</span>
-            <button class="copy-btn" onclick="copyLink('${g.slug}', this)">Copy link</button>
+            <span>${BASE_URL}/apply.html?g=${g.slug}</span>
+            <button class="copy-btn" onclick="copyText('${BASE_URL}/apply.html?g=${g.slug}', this)">Copy link</button>
           </div>
         </div>
       `).join('');
     }
 
-    function copyLink(slug, btn) {
-      const url = `${BASE_URL}/apply.html?g=${slug}`;
-      navigator.clipboard.writeText(url).then(() => {
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
         btn.textContent = 'Copied ✓';
         btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+        setTimeout(() => { btn.textContent = btn.textContent.includes('apply') ? 'Copy apply link' : 'Copy link'; btn.classList.remove('copied'); }, 2000);
       });
     }
   </script>
