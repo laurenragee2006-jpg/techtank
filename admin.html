@@ -289,10 +289,12 @@
       confirmBtn.disabled = true;
 
       // Generate a temp password and create their dashboard account
+      // Use isolated storage key so signUp doesn't overwrite the admin session
       const tempPass = makeTempPassword();
       const tempClient = window.supabase.createClient(
         'https://fqqyguufldcvckyaqzxw.supabase.co',
-        'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr'
+        'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr',
+        { auth: { storageKey: 'dealflow-temp-signup', persistSession: false } }
       );
       await tempClient.auth.signUp({ email, password: tempPass });
 
