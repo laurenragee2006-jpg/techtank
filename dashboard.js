@@ -136,6 +136,7 @@ function renderTable(data) {
     const statusClass = {
       'New': 'badge--new', 'Reviewed': 'badge--reviewed',
       'Shortlisted': 'badge--shortlisted', 'Passed': 'badge--passed',
+      'Denied': 'badge--denied',
     }[a.status] || 'badge--new';
 
     const tr = document.createElement('tr');
@@ -252,6 +253,7 @@ function openDrawer(a, bg, color) {
         <button class="status-btn ${s==='Reviewed'?'active-blue':''}"      onclick="setStatus(this,'Reviewed')">Reviewed</button>
         <button class="status-btn ${s==='Shortlisted'?'active-purple':''}" onclick="setStatus(this,'Shortlisted')">Shortlisted</button>
         <button class="status-btn ${s==='Passed'?'active-gray':''}"        onclick="setStatus(this,'Passed')">Passed</button>
+        <button class="status-btn ${s==='Denied'?'active-red':''}"         onclick="setStatus(this,'Denied')">Denied</button>
       </div>
     </div>
 
@@ -313,7 +315,7 @@ function closeDrawer() {
 
 async function setStatus(btn, status) {
   btn.closest('.drawer-status-row').querySelectorAll('.status-btn').forEach(b => b.className = 'status-btn');
-  const classMap = { 'New':'active-green', 'Reviewed':'active-blue', 'Shortlisted':'active-purple', 'Passed':'active-gray' };
+  const classMap = { 'New':'active-green', 'Reviewed':'active-blue', 'Shortlisted':'active-purple', 'Passed':'active-gray', 'Denied':'active-red' };
   btn.classList.add(classMap[status]);
 
   if (!currentApplicant) return;
@@ -358,6 +360,9 @@ document.querySelectorAll('.db-nav__item').forEach(item => {
     } else if (text.includes('Pending')) {
       filteredData = allApplicants.filter(a => a.status === 'New');
       document.querySelector('.db-topbar__left h1').textContent = 'Pending review';
+    } else if (text.includes('Denied')) {
+      filteredData = allApplicants.filter(a => a.status === 'Denied');
+      document.querySelector('.db-topbar__left h1').textContent = 'Denied';
     }
 
     document.querySelector('.db-count').textContent = `${filteredData.length} total`;

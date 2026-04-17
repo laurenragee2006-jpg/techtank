@@ -376,6 +376,7 @@
 .badge--reviewed { background: rgba(122,184,245,0.1); color: var(--blue); }
 .badge--shortlisted { background: rgba(201,166,255,0.12); color: var(--purple); }
 .badge--passed   { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+.badge--denied   { background: rgba(255,80,80,0.1); color: rgba(255,100,100,0.9); }
 
 /* --- DRAWER --- */
 .drawer-overlay {
@@ -504,6 +505,7 @@
 .status-btn.active-blue   { background: rgba(122,184,245,0.1); border-color: rgba(122,184,245,0.3); color: var(--blue); }
 .status-btn.active-purple { background: rgba(201,166,255,0.12); border-color: rgba(201,166,255,0.3); color: var(--purple); }
 .status-btn.active-gray   { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+.status-btn.active-red    { background: rgba(255,80,80,0.1); border-color: rgba(255,80,80,0.3); color: rgba(255,100,100,0.9); }
 
 /* --- LOGIN OVERLAY --- */
 .login-overlay {
