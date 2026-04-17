@@ -55,32 +55,24 @@ async function loadGroup(email) {
 
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
   const errEl = document.getElementById('loginError');
   const btn = document.querySelector('.login-card .btn--primary');
-  if (!email) return;
+  if (!email || !password) return;
 
   errEl.style.display = 'none';
-  btn.textContent = 'Sending...';
+  btn.textContent = 'Signing in...';
   btn.disabled = true;
 
-  const { error } = await db.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: 'https://getdealflow-app.vercel.app/dashboard.html' }
-  });
+  const { error } = await db.auth.signInWithPassword({ email, password });
 
   if (error) {
-    errEl.textContent = error.message;
+    errEl.textContent = 'Invalid email or password.';
     errEl.style.display = 'block';
-    btn.textContent = 'Send sign-in link →';
+    btn.textContent = 'Sign in →';
     btn.disabled = false;
     return;
   }
-
-  document.querySelector('.login-card').innerHTML = `
-    <div class="login-card__logo">deal<span>flow</span></div>
-    <h2>Check your email</h2>
-    <p style="color:var(--text-muted)">We sent a link to <strong style="color:var(--text)">${email}</strong> — click it to open the dashboard.</p>
-  `;
 }
 
 async function handleSignOut() {
