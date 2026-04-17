@@ -164,6 +164,43 @@
   <script>
     const BASE_URL = 'https://getdealflow-app.vercel.app';
     const ADMIN_EMAIL = 'laurenragee2006@gmail.com';
+    const RESEND_KEY = 're_gF4eyQVV_A57JrVmN5CYQdAjWGrWdHQiv';
+
+    async function sendApprovalEmail(toEmail, name, applyLink, dashLink, tempPass) {
+      try {
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: 'DealFlow <onboarding@resend.dev>',
+            to: toEmail,
+            subject: 'Your DealFlow group is live!',
+            html: `
+              <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px;background:#0e0e0e;color:#e8e8e0;border-radius:12px">
+                <p style="font-family:Georgia,serif;font-size:20px;margin:0 0 4px">deal<span style="color:#B4FF6A">flow</span></p>
+                <h2 style="font-size:22px;margin:16px 0 8px">Your group is live 🎉</h2>
+                <p style="color:#888;margin-bottom:28px">Here's everything you need to get started, ${name}.</p>
+                <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:18px;margin-bottom:12px">
+                  <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#666;margin:0 0 6px">Application form — share with founders</p>
+                  <p style="color:#B4FF6A;font-family:monospace;font-size:13px;margin:0;word-break:break-all">${applyLink}</p>
+                </div>
+                <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:18px;margin-bottom:12px">
+                  <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#666;margin:0 0 6px">Investor dashboard</p>
+                  <p style="color:#7ab8f5;font-family:monospace;font-size:13px;margin:0">${dashLink}</p>
+                </div>
+                <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:18px;margin-bottom:28px">
+                  <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#666;margin:0 0 6px">Login credentials</p>
+                  <p style="color:#e8e8e0;font-size:13px;margin:0 0 4px">Email: ${toEmail}</p>
+                  <p style="color:#e8e8e0;font-family:monospace;font-size:13px;margin:0">Temp password: ${tempPass}</p>
+                </div>
+                <p style="color:#555;font-size:12px;margin:0">— The DealFlow Team</p>
+              </div>
+            `
+          })
+        });
+        return res.ok;
+      } catch(e) { return false; }
+    }
 
     const db = window.supabase.createClient(
       'https://fqqyguufldcvckyaqzxw.supabase.co',
@@ -338,11 +375,20 @@ Let us know if you have any questions!
             <button class="copy-btn" onclick="copyText('${tempPass}', this)">Copy</button>
           </div>
 
-          <a href="${mailtoLink}" class="btn--approve" style="display:inline-block;text-decoration:none;padding:8px 18px">✉ Send approval email →</a>
+          <button class="btn--approve" style="padding:8px 18px" id="emailBtn-${id}" onclick="sendEmailBtn('${id}','${email}','${name}','${applyLink}','${dashLink}','${tempPass}')">✉ Send approval email</button>
         </div>
       `;
 
       loadGroups();
+    }
+
+    async function sendEmailBtn(id, email, name, applyLink, dashLink, tempPass) {
+      const btn = document.getElementById(`emailBtn-${id}`);
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+      const ok = await sendApprovalEmail(email, name, applyLink, dashLink, tempPass);
+      btn.textContent = ok ? '✓ Email sent' : '✕ Failed — check console';
+      btn.disabled = false;
     }
 
     async function denyRequest(id) {
@@ -382,17 +428,9 @@ Let us know if you have any questions!
             <span>${BASE_URL}/dashboard.html</span>
             <button class="copy-btn" onclick="copyText('${BASE_URL}/dashboard.html', this)">Copy</button>
           </div>
-          <button class="copy-btn" onclick="sendReset('${g.owner_email}')" style="font-size:12px;padding:6px 14px">↺ Send password reset email</button>
+          <button class="copy-btn" onclick="copyText(\`update auth.users set encrypted_password = crypt('Temp1234!', gen_salt('bf')) where email = '${g.owner_email}';\`, this)" style="font-size:12px;padding:6px 14px">↺ Copy password reset SQL</button>
         </div>
       `).join('');
-    }
-
-    async function sendReset(email) {
-      const { error } = await db.auth.resetPasswordForEmail(email, {
-        redirectTo: `${BASE_URL}/dashboard.html`
-      });
-      if (error) { alert('Error: ' + error.message); return; }
-      alert(`Password reset email sent to ${email}`);
     }
 
     function copyText(text, btn) {
