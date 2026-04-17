@@ -31,6 +31,19 @@ function formatDate(iso) {
 
 let userGroup = null;
 
+// Check for error in URL hash (e.g. expired reset link)
+(function() {
+  const hash = window.location.hash;
+  if (hash.includes('error=access_denied') || hash.includes('error_code=otp_expired')) {
+    const errEl = document.getElementById('loginError');
+    if (errEl) {
+      errEl.textContent = 'That link has expired. Please request a new password reset.';
+      errEl.style.display = 'block';
+    }
+    history.replaceState(null, '', window.location.pathname);
+  }
+})();
+
 db.auth.onAuthStateChange((event, session) => {
   if (event === 'PASSWORD_RECOVERY') {
     // Show set-password form instead of dashboard
