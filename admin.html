@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — DealFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    body { min-height: 100vh; background: var(--bg); padding: 2rem; }
+
+    .admin-header {
+      max-width: 900px;
+      margin: 0 auto 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .admin-header__logo { font-family: var(--font-serif); font-size: 1.1rem; color: var(--text); text-decoration: none; }
+    .admin-header__logo span { color: var(--accent); }
+    .admin-header h1 { font-family: var(--font-sans); font-size: 1rem; color: var(--text-muted); font-weight: 400; }
+
+    .admin-wrap { max-width: 900px; margin: 0 auto; }
+
+    .admin-title { font-family: var(--font-serif); font-size: 2rem; color: var(--text); margin-bottom: 0.5rem; }
+    .admin-sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+
+    .group-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+    .group-card:hover { border-color: rgba(255,255,255,0.15); }
+
+    .group-card__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .group-card__name { font-family: var(--font-sans); font-size: 1rem; font-weight: 500; color: var(--text); }
+    .group-card__meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .group-card__link-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+    }
+    .group-card__link-row span {
+      font-size: 13px;
+      color: var(--blue);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: monospace;
+    }
+    .copy-btn {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      border: 0.5px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .copy-btn.copied { border-color: var(--accent); color: var(--accent); }
+
+    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+
+    /* Login overlay reuse */
+    .login-overlay {
+      position: fixed; inset: 0; background: var(--bg);
+      display: flex; align-items: center; justify-content: center; z-index: 1000;
+    }
+    .login-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 2.5rem;
+      width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 1rem;
+    }
+    .login-card__logo { font-family: var(--font-serif); font-size: 1.25rem; color: var(--text); }
+    .login-card__logo span { color: var(--accent); }
+    .login-card h2 { font-family: var(--font-serif); font-size: 1.5rem; color: var(--text); margin: 0; }
+    .login-card p { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+    .login-card .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .login-card label { font-size: 13px; color: var(--text-muted); }
+    .login-card input {
+      background: var(--bg-card-2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 12px;
+      color: var(--text); font-family: var(--font-sans); font-size: 14px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .login-card input:focus { border-color: rgba(180,255,106,0.4); }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN OVERLAY -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+      <div class="login-card__logo">deal<span>flow</span></div>
+      <h2>Admin access</h2>
+      <p>Sign in to manage your groups.</p>
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="you@email.com" onkeydown="if(event.key==='Enter')handleLogin()" />
+      </div>
+      <div id="loginError" style="display:none;color:rgba(255,80,80,0.8);font-size:13px;margin-bottom:0.5rem"></div>
+      <button class="btn btn--primary" style="width:100%" onclick="handleLogin()">Send sign-in link →</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="admin-header">
+    <a href="index.html" class="admin-header__logo">deal<span>flow</span></a>
+    <a href="dashboard.html" class="btn btn--ghost" style="font-size:13px;padding:7px 16px">← Dashboard</a>
+  </div>
+
+  <div class="admin-wrap">
+    <h1 class="admin-title">Your groups</h1>
+    <p class="admin-sub">Copy an apply link and send it to the group. Anyone with the link can submit an application.</p>
+
+    <div id="groupsList">
+      <div class="empty-state">Loading...</div>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = 'https://techtank-rho.vercel.app';
+    const db = window.supabase.createClient(
+      'https://fqqyguufldcvckyaqzxw.supabase.co',
+      'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr'
+    );
+
+    const ADMIN_EMAIL = 'laurenragee2006@gmail.com';
+
+    db.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        if (session.user.email !== ADMIN_EMAIL) {
+          document.getElementById('groupsList').innerHTML = '<div class="empty-state">Access denied.</div>';
+          document.getElementById('loginOverlay').style.display = 'none';
+          return;
+        }
+        document.getElementById('loginOverlay').style.display = 'none';
+        setTimeout(loadGroups, 500);
+      } else {
+        document.getElementById('loginOverlay').style.display = 'flex';
+      }
+    });
+
+    async function handleLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const errEl = document.getElementById('loginError');
+      const btn = document.querySelector('.login-card .btn--primary');
+      if (!email) return;
+
+      errEl.style.display = 'none';
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+
+      const { error } = await db.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: `${BASE_URL}/admin.html` }
+      });
+
+      if (error) {
+        errEl.textContent = error.message;
+        errEl.style.display = 'block';
+        btn.textContent = 'Send sign-in link →';
+        btn.disabled = false;
+        return;
+      }
+
+      document.querySelector('.login-card').innerHTML = `
+        <div class="login-card__logo">deal<span>flow</span></div>
+        <h2>Check your email</h2>
+        <p style="color:var(--text-muted)">We sent a link to <strong style="color:var(--text)">${email}</strong> — click it to open admin.</p>
+      `;
+    }
+
+    async function loadGroups() {
+      const { data, error } = await db.from('groups').select('*').order('created_at', { ascending: false });
+
+      const list = document.getElementById('groupsList');
+
+      if (error || !data || data.length === 0) {
+        list.innerHTML = '<div class="empty-state">No groups yet. Add one in Supabase → Table Editor → groups.</div>';
+        return;
+      }
+
+      list.innerHTML = data.map(g => `
+        <div class="group-card">
+          <div class="group-card__top">
+            <div>
+              <div class="group-card__name">${g.name}</div>
+              <div class="group-card__meta">${g.owner_email} · slug: ${g.slug}</div>
+            </div>
+            <a href="dashboard.html" class="btn btn--ghost" style="font-size:12px;padding:6px 14px">View dashboard →</a>
+          </div>
+          <div class="group-card__link-row">
+            <span id="link-${g.slug}">${BASE_URL}/apply.html?g=${g.slug}</span>
+            <button class="copy-btn" onclick="copyLink('${g.slug}', this)">Copy link</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function copyLink(slug, btn) {
+      const url = `${BASE_URL}/apply.html?g=${slug}`;
+      navigator.clipboard.writeText(url).then(() => {
+        btn.textContent = 'Copied ✓';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
