@@ -403,6 +403,203 @@ async function saveNotes() {
   if (btn) { btn.textContent = 'Saved ✓'; setTimeout(() => btn.textContent = 'Save notes', 1500); }
 }
 
+// --- ANALYTICS ---
+
+let chartInstances = {};
+
+function showAnalytics() {
+  document.getElementById('analyticsPanel').style.display = 'flex';
+  document.querySelector('.db-table-wrap').style.display = 'none';
+  document.querySelector('.db-stats').style.display = 'none';
+  document.querySelector('.db-topbar').style.display = 'none';
+  renderAnalytics();
+}
+
+function hideAnalytics() {
+  document.getElementById('analyticsPanel').style.display = 'none';
+  document.querySelector('.db-table-wrap').style.display = '';
+  document.querySelector('.db-stats').style.display = '';
+  document.querySelector('.db-topbar').style.display = '';
+}
+
+function destroyCharts() {
+  Object.values(chartInstances).forEach(c => c.destroy());
+  chartInstances = {};
+}
+
+function renderAnalytics() {
+  destroyCharts();
+  const data = allApplicants;
+  const n = data.length;
+
+  // KPI cards
+  const shortlisted = data.filter(a => a.status === 'Shortlisted').length;
+  const reviewed = data.filter(a => a.status !== 'New').length;
+  const conversion = n > 0 ? Math.round((shortlisted / n) * 100) : 0;
+
+  const nowMs = Date.now();
+  const newApps = data.filter(a => a.status === 'New');
+  const avgDays = newApps.length > 0
+    ? Math.round(newApps.reduce((sum, a) => sum + (nowMs - new Date(a.created_at)) / 86400000, 0) / newApps.length)
+    : 0;
+
+  document.getElementById('an-total').textContent = n;
+  document.getElementById('an-shortlisted').textContent = shortlisted;
+  document.getElementById('an-conversion').textContent = conversion + '%';
+  document.getElementById('an-avgdays').textContent = avgDays + 'd';
+
+  const chartDefaults = {
+    color: 'rgba(232,228,220,0.5)',
+    font: { family: "'DM Sans', sans-serif", size: 11 }
+  };
+  Chart.defaults.color = 'rgba(232,228,220,0.4)';
+  Chart.defaults.font.family = "'DM Sans', sans-serif";
+  Chart.defaults.font.size = 11;
+
+  const gridColor = 'rgba(255,255,255,0.06)';
+
+  // --- FUNNEL ---
+  const funnelStages = ['Applied', 'Reviewed', 'Shortlisted', 'Passed'];
+  const funnelCounts = [
+    n,
+    data.filter(a => ['Reviewed','Shortlisted','Passed'].includes(a.status)).length,
+    data.filter(a => a.status === 'Shortlisted').length,
+    data.filter(a => a.status === 'Passed').length,
+  ];
+  chartInstances.funnel = new Chart(document.getElementById('chartFunnel'), {
+    type: 'bar',
+    data: {
+      labels: funnelStages,
+      datasets: [{
+        data: funnelCounts,
+        backgroundColor: ['rgba(180,255,106,0.7)','rgba(122,184,245,0.7)','rgba(201,166,255,0.7)','rgba(255,180,100,0.7)'],
+        borderRadius: 6, borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { precision: 0 } },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+
+  // --- APPLICATIONS OVER TIME ---
+  const weekMap = {};
+  data.forEach(a => {
+    const d = new Date(a.created_at);
+    const week = `${d.getFullYear()}-W${String(Math.ceil((d.getDate() - d.getDay() + 6) / 7)).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    weekMap[week] = (weekMap[week] || 0) + 1;
+  });
+  const timeLabels = Object.keys(weekMap).sort().slice(-12);
+  const timeCounts = timeLabels.map(k => weekMap[k]);
+  chartInstances.time = new Chart(document.getElementById('chartTime'), {
+    type: 'line',
+    data: {
+      labels: timeLabels.map(l => l.split('-').slice(1).join(' ')),
+      datasets: [{
+        data: timeCounts,
+        borderColor: 'rgba(180,255,106,0.8)',
+        backgroundColor: 'rgba(180,255,106,0.08)',
+        fill: true, tension: 0.4, pointRadius: 3,
+        pointBackgroundColor: 'rgba(180,255,106,0.9)',
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor } },
+        y: { grid: { color: gridColor }, ticks: { precision: 0 } }
+      }
+    }
+  });
+
+  // --- STAGE BREAKDOWN ---
+  const stageCounts = {};
+  data.forEach(a => { const s = a.stage || 'Unknown'; stageCounts[s] = (stageCounts[s] || 0) + 1; });
+  const stageColors = ['rgba(180,255,106,0.8)','rgba(122,184,245,0.8)','rgba(201,166,255,0.8)','rgba(255,180,100,0.8)','rgba(80,220,200,0.8)','rgba(255,120,120,0.8)'];
+  chartInstances.stage = new Chart(document.getElementById('chartStage'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(stageCounts),
+      datasets: [{ data: Object.values(stageCounts), backgroundColor: stageColors, borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: {
+      plugins: { legend: { position: 'right', labels: { boxWidth: 10, padding: 12 } } },
+      cutout: '65%'
+    }
+  });
+
+  // --- SECTOR/INDUSTRY ---
+  const sectorCounts = {};
+  data.forEach(a => { const s = a.industry || a.sector || 'Other'; sectorCounts[s] = (sectorCounts[s] || 0) + 1; });
+  const topSectors = Object.entries(sectorCounts).sort((a,b) => b[1]-a[1]).slice(0, 8);
+  chartInstances.sector = new Chart(document.getElementById('chartSector'), {
+    type: 'bar',
+    data: {
+      labels: topSectors.map(s => s[0]),
+      datasets: [{ data: topSectors.map(s => s[1]), backgroundColor: 'rgba(122,184,245,0.7)', borderRadius: 4, borderSkipped: false }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 30, minRotation: 20 } },
+        y: { grid: { color: gridColor }, ticks: { precision: 0 } }
+      }
+    }
+  });
+
+  // --- RAISE DISTRIBUTION ---
+  const raiseOrder = ['Under $250k','$250k – $500k','$500k – $1M','$1M – $2M','$2M – $5M','$5M+'];
+  const raiseCounts = {};
+  raiseOrder.forEach(r => raiseCounts[r] = 0);
+  data.forEach(a => {
+    const r = a.capital_raise_target || a.raising || '';
+    if (r.includes('under-250k') || r.includes('Under')) raiseCounts['Under $250k']++;
+    else if (r.includes('250k-500k') || r.includes('250k')) raiseCounts['$250k – $500k']++;
+    else if (r.includes('500k-1m') || r.includes('500k')) raiseCounts['$500k – $1M']++;
+    else if (r.includes('1m-2m') || r.includes('1M')) raiseCounts['$1M – $2M']++;
+    else if (r.includes('2m-5m') || r.includes('2M')) raiseCounts['$2M – $5M']++;
+    else if (r.includes('5m+') || r.includes('5M')) raiseCounts['$5M+']++;
+  });
+  chartInstances.raise = new Chart(document.getElementById('chartRaise'), {
+    type: 'bar',
+    data: {
+      labels: raiseOrder,
+      datasets: [{ data: raiseOrder.map(r => raiseCounts[r]), backgroundColor: 'rgba(201,166,255,0.7)', borderRadius: 4, borderSkipped: false }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 20 } },
+        y: { grid: { color: gridColor }, ticks: { precision: 0 } }
+      }
+    }
+  });
+
+  // --- TOP LOCATIONS ---
+  const locCounts = {};
+  data.forEach(a => { const l = a.location || a.city_town; if (l) locCounts[l] = (locCounts[l]||0)+1; });
+  const topLocs = Object.entries(locCounts).sort((a,b) => b[1]-a[1]).slice(0, 8);
+  chartInstances.locs = new Chart(document.getElementById('chartLocations'), {
+    type: 'bar',
+    data: {
+      labels: topLocs.map(l => l[0]),
+      datasets: [{ data: topLocs.map(l => l[1]), backgroundColor: 'rgba(255,180,100,0.7)', borderRadius: 4, borderSkipped: false }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { precision: 0 } },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+}
+
 // --- DILIGENCE REPORT ---
 
 function generateReport(a) {
@@ -581,6 +778,12 @@ document.querySelectorAll('.db-nav__item').forEach(item => {
 
     document.querySelectorAll('.db-nav__item').forEach(i => i.classList.remove('db-nav__item--active'));
     item.classList.add('db-nav__item--active');
+
+    if (text.includes('Analytics')) {
+      showAnalytics(); return;
+    }
+
+    hideAnalytics();
 
     if (text.includes('All')) {
       filteredData = [...allApplicants];
