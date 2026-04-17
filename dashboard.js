@@ -32,8 +32,15 @@ function formatDate(iso) {
 let userGroup = null;
 
 db.auth.onAuthStateChange((event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    // Show set-password form instead of dashboard
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('setPasswordOverlay').style.display = 'flex';
+    return;
+  }
   if (session) {
     document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('setPasswordOverlay').style.display = 'none';
     document.getElementById('userEmail').textContent = session.user.email;
     setTimeout(() => {
       loadGroup(session.user.email);
@@ -43,6 +50,38 @@ db.auth.onAuthStateChange((event, session) => {
     document.getElementById('loginOverlay').style.display = 'flex';
   }
 });
+
+async function handleSetPassword() {
+  const pass = document.getElementById('newPassword').value;
+  const confirm = document.getElementById('confirmPassword').value;
+  const errEl = document.getElementById('setPasswordError');
+  const btn = document.getElementById('setPasswordBtn');
+
+  if (!pass || pass.length < 6) {
+    errEl.textContent = 'Password must be at least 6 characters.';
+    errEl.style.display = 'block'; return;
+  }
+  if (pass !== confirm) {
+    errEl.textContent = 'Passwords do not match.';
+    errEl.style.display = 'block'; return;
+  }
+
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  const { error } = await db.auth.updateUser({ password: pass });
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.style.display = 'block';
+    btn.textContent = 'Set password →';
+    btn.disabled = false;
+    return;
+  }
+
+  // Password set — reload to enter dashboard normally
+  window.location.href = 'dashboard.html';
+}
 
 async function loadGroup(email) {
   const { data } = await db.from('groups').select('*').eq('owner_email', email).single();

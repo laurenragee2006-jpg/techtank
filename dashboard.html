@@ -32,6 +32,25 @@
     </div>
   </div>
 
+  <!-- SET PASSWORD OVERLAY -->
+  <div class="login-overlay" id="setPasswordOverlay" style="display:none">
+    <div class="login-card">
+      <div class="login-card__logo">deal<span>flow</span></div>
+      <h2>Set your password</h2>
+      <p>Choose a new password for your dashboard account.</p>
+      <div class="form-group">
+        <label for="newPassword">New password</label>
+        <input type="password" id="newPassword" placeholder="••••••••" />
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Confirm password</label>
+        <input type="password" id="confirmPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleSetPassword()" />
+      </div>
+      <div id="setPasswordError" style="display:none;color:rgba(255,80,80,0.8);font-size:13px;margin-bottom:0.5rem"></div>
+      <button class="btn btn--primary" id="setPasswordBtn" style="width:100%" onclick="handleSetPassword()">Set password →</button>
+    </div>
+  </div>
+
   <!-- SIDEBAR NAV -->
   <aside class="db-sidebar">
     <div class="db-sidebar__logo">deal<span>flow</span></div>
