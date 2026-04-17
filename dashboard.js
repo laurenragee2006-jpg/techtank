@@ -31,12 +31,14 @@ function formatDate(iso) {
 
 let userGroup = null;
 
-db.auth.onAuthStateChange(async (event, session) => {
+db.auth.onAuthStateChange((event, session) => {
   if (session) {
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('userEmail').textContent = session.user.email;
-    await loadGroup(session.user.email);
-    loadApplicants();
+    setTimeout(() => {
+      loadGroup(session.user.email);
+      loadApplicants();
+    }, 500);
   } else {
     document.getElementById('loginOverlay').style.display = 'flex';
   }
@@ -98,7 +100,7 @@ async function loadApplicants() {
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (error) { console.error(error); return; }
+  if (error) { console.error('loadApplicants error:', JSON.stringify(error)); return; }
 
   allApplicants = data || [];
   filteredData = [...allApplicants];
