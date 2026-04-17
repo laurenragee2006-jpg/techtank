@@ -229,15 +229,19 @@
       }
 
       el.innerHTML = data.map(r => `
-        <div class="req-card" id="req-${r.id}">
+        <div class="req-card" id="req-${r.id}"
+          data-id="${r.id}"
+          data-name="${encodeURIComponent(r.fund_name)}"
+          data-email="${encodeURIComponent(r.contact_email)}"
+          data-desc="${encodeURIComponent(r.description||'')}">
           <div class="req-card__top">
             <div>
               <div class="req-card__name">${r.fund_name}</div>
               <div class="req-card__email">${r.contact_email}</div>
             </div>
             <div class="req-card__actions">
-              <button class="btn--approve" onclick="openApprove('${r.id}', '${r.fund_name}', '${r.contact_email}', '${r.description||''}')">Approve</button>
-              <button class="btn--deny" onclick="denyRequest('${r.id}')">Deny</button>
+              <button type="button" class="btn--approve" onclick="openApprove('${r.id}')">Approve</button>
+              <button type="button" class="btn--deny" onclick="denyRequest('${r.id}')">Deny</button>
             </div>
           </div>
           ${r.description ? `<div class="req-card__desc">${r.description}</div>` : ''}
@@ -245,7 +249,7 @@
             <div class="slug-row">
               <label>URL slug:</label>
               <input type="text" id="slug-${r.id}" value="${toSlug(r.fund_name)}" placeholder="e.g. horizon-ventures" />
-              <button class="btn--approve" onclick="confirmApprove('${r.id}', '${r.fund_name}', '${r.contact_email}', '${r.description||''}')">Confirm →</button>
+              <button type="button" class="btn--approve" onclick="confirmApproveFromCard('${r.id}')">Confirm →</button>
             </div>
           </div>
         </div>
@@ -266,6 +270,14 @@
       let pass = '';
       for (let i = 0; i < 8; i++) pass += chars[Math.floor(Math.random() * chars.length)];
       return pass + 'A1!';
+    }
+
+    function confirmApproveFromCard(id) {
+      const card = document.getElementById(`req-${id}`);
+      const name = decodeURIComponent(card.dataset.name);
+      const email = decodeURIComponent(card.dataset.email);
+      const description = decodeURIComponent(card.dataset.desc);
+      confirmApprove(id, name, email, description);
     }
 
     async function confirmApprove(id, name, email, description) {
