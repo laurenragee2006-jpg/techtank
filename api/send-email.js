@@ -18,17 +18,17 @@ export default async function handler(req, res) {
       to,
       subject: 'Your Lucent group is live!',
       html: `
-        <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px;background:#EDEEED;color:#0F172A;border-radius:12px">
-          <p style="font-family:Georgia,serif;font-size:20px;margin:0 0 4px">lu<span style="color:#76ecce">cent</span></p>
+        <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px;background:#ECF1F1;color:#0F172A;border-radius:12px">
+          <p style="font-family:Georgia,serif;font-size:20px;margin:0 0 4px">lu<span style="color:#208e90">cent</span></p>
           <h2 style="font-size:22px;margin:16px 0 8px">Your group is live 🎉</h2>
           <p style="color:#64748b;margin-bottom:28px">Here's everything you need to get started, ${name}.</p>
           <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:18px;margin-bottom:12px">
             <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#94a3b8;margin:0 0 6px">Application form — share with founders</p>
-            <p style="color:#76ecce;font-family:monospace;font-size:13px;margin:0;word-break:break-all">${applyLink}</p>
+            <p style="color:#208e90;font-family:monospace;font-size:13px;margin:0;word-break:break-all">${applyLink}</p>
           </div>
           <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:18px;margin-bottom:12px">
             <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#94a3b8;margin:0 0 6px">Investor dashboard</p>
-            <p style="color:#47d4b0;font-family:monospace;font-size:13px;margin:0">${dashLink}</p>
+            <p style="color:#2aafb1;font-family:monospace;font-size:13px;margin:0">${dashLink}</p>
           </div>
           <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:18px;margin-bottom:28px">
             <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#94a3b8;margin:0 0 6px">Login credentials</p>
