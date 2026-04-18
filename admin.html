@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — DealFlow</title>
+  <title>Admin — Lucent</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
@@ -125,7 +125,7 @@
   <!-- LOGIN OVERLAY -->
   <div class="login-overlay" id="loginOverlay">
     <div class="login-card">
-      <div class="login-card__logo">deal<span>flow</span></div>
+      <div class="login-card__logo">lu<span>cent</span></div>
       <h2>Admin access</h2>
       <p>Sign in to manage your groups.</p>
       <div class="form-group">
@@ -143,7 +143,7 @@
 
   <!-- CONTENT -->
   <div class="admin-header">
-    <a href="index.html" class="admin-header__logo">deal<span>flow</span></a>
+    <a href="index.html" class="admin-header__logo">lu<span>cent</span></a>
     <a href="dashboard.html" class="btn btn--ghost" style="font-size:13px;padding:7px 16px">← Dashboard</a>
   </div>
 
@@ -162,7 +162,7 @@
   </div>
 
   <script>
-    const BASE_URL = 'https://getdealflow-app.vercel.app';
+    const BASE_URL = 'https://getlucent-app.vercel.app';
     const ADMIN_EMAIL = 'laurenragee2006@gmail.com';
     async function sendApprovalEmail(toEmail, name, applyLink, dashLink, tempPass) {
       try {
@@ -294,7 +294,7 @@
       const tempClient = window.supabase.createClient(
         'https://fqqyguufldcvckyaqzxw.supabase.co',
         'sb_publishable_8LxqtjUExBClidRzt4tH1Q_GIqttXmr',
-        { auth: { storageKey: 'dealflow-temp-signup', persistSession: false } }
+        { auth: { storageKey: 'lucent-temp-signup', persistSession: false } }
       );
       await tempClient.auth.signUp({ email, password: tempPass });
 
@@ -319,7 +319,7 @@
       const emailBody = encodeURIComponent(
 `Hi ${name} team,
 
-Your DealFlow group has been approved! Here's everything you need:
+Your Lucent group has been approved! Here's everything you need:
 
 📋 Application form (share this link with founders):
 ${applyLink}
@@ -335,10 +335,10 @@ Sign in at the dashboard link above and change your password after first login.
 
 Let us know if you have any questions!
 
-— The DealFlow Team`
+— The Lucent Team`
       );
 
-      const mailtoLink = `mailto:${email}?subject=Your DealFlow group is live!&body=${emailBody}`;
+      const mailtoLink = `mailto:${email}?subject=Your Lucent group is live!&body=${emailBody}`;
 
       document.getElementById(`req-${id}`).innerHTML = `
         <div style="padding:0.5rem 0">

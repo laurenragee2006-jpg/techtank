@@ -650,7 +650,7 @@ function generateReport(a) {
 
   <div class="report-header">
     <div class="report-header__top">
-      <div class="report-brand">DealFlow — Investment Diligence Report</div>
+      <div class="report-brand">Lucent — Investment Diligence Report</div>
       <div class="report-confidential">Confidential</div>
     </div>
     <div class="report-title">
@@ -761,7 +761,7 @@ function generateReport(a) {
   </div>` : ''}
 
   <div class="report-footer">
-    <span>DealFlow — Confidential Investment Diligence Report</span>
+    <span>Lucent — Confidential Investment Diligence Report</span>
     <span>Applied ${formatDate(a.created_at)} · Status: ${a.status || 'New'}</span>
   </div>
 
