@@ -8,18 +8,18 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:         #EEF2F7;
+  --bg:         #EDEEED;
   --bg-card:    #FFFFFF;
-  --bg-card-2:  #F5F8FC;
-  --accent:     #3B82F6;
-  --accent-dim: rgba(59,130,246,0.10);
-  --blue:       #60A5FA;
+  --bg-card-2:  #F5F6F5;
+  --accent:     #76ecce;
+  --accent-dim: rgba(118,236,206,0.15);
+  --blue:       #47d4b0;
   --purple:     #A78BFA;
-  --text:       #0F172A;
-  --text-muted: rgba(15,23,42,0.55);
-  --text-dim:   rgba(15,23,42,0.35);
-  --border:     rgba(15,23,42,0.09);
-  --border-hover: rgba(59,130,246,0.35);
+  --text:       #1A1D1C;
+  --text-muted: rgba(26,29,28,0.58);
+  --text-dim:   rgba(26,29,28,0.38);
+  --border:     rgba(175,178,177,0.38);
+  --border-hover: rgba(118,236,206,0.55);
   --radius-sm:  8px;
   --radius-md:  12px;
   --radius-lg:  16px;
@@ -63,7 +63,7 @@ img { display: block; max-width: 100%; }
 }
 .btn--primary {
   background: var(--accent);
-  color: #ffffff;
+  color: #0F2420;
 }
 .btn--primary:hover { opacity: 0.85; }
 
@@ -76,7 +76,7 @@ img { display: block; max-width: 100%; }
 
 .btn--cta {
   background: var(--accent);
-  color: #ffffff;
+  color: #0F2420;
   font-size: 13px;
   padding: 8px 18px;
 }
@@ -107,7 +107,7 @@ img { display: block; max-width: 100%; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
-  border: 0.5px solid rgba(59,130,246,0.35);
+  border: 0.5px solid rgba(118,236,206,0.35);
   padding: 5px 14px;
   border-radius: var(--radius-pill);
   margin-bottom: 1.5rem;
@@ -125,7 +125,7 @@ img { display: block; max-width: 100%; }
   border-bottom: 0.5px solid var(--border);
   position: sticky;
   top: 0;
-  background: rgba(238,242,247,0.95);
+  background: rgba(237,238,237,0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   z-index: 100;
@@ -317,7 +317,7 @@ img { display: block; max-width: 100%; }
   border-radius: var(--radius-pill);
   flex-shrink: 0;
 }
-.mock-badge.green  { background: rgba(59,130,246,0.12); color: var(--accent); }
+.mock-badge.green  { background: rgba(118,236,206,0.12); color: var(--accent); }
 .mock-badge.blue   { background: rgba(122,184,245,0.12); color: var(--blue); }
 .mock-badge.purple { background: rgba(201,166,255,0.12); color: var(--purple); }
 
@@ -416,7 +416,7 @@ img { display: block; max-width: 100%; }
   gap: 0;
 }
 .platform-card:hover { border-color: rgba(255,255,255,0.18); }
-.platform-card--featured { border-color: rgba(59,130,246,0.25); }
+.platform-card--featured { border-color: rgba(118,236,206,0.25); }
 
 .platform-card__badge {
   position: absolute;
@@ -441,7 +441,7 @@ img { display: block; max-width: 100%; }
   justify-content: center;
   margin-bottom: 1rem;
 }
-.icon--green { background: rgba(59,130,246,0.1); }
+.icon--green { background: rgba(118,236,206,0.1); }
 .icon--blue  { background: rgba(122,184,245,0.12); }
 .icon--purple { background: rgba(201,166,255,0.12); }
 
@@ -515,8 +515,8 @@ img { display: block; max-width: 100%; }
   grid-template-columns: 1fr 1fr;
   gap: 5rem;
   align-items: center;
-  background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 70%);
-  border: 0.5px solid rgba(59,130,246,0.25);
+  background: linear-gradient(135deg, #e0faf5 0%, #f0fdfb 70%);
+  border: 0.5px solid rgba(118,236,206,0.4);
   border-radius: var(--radius-lg);
   padding: 3rem;
 }
@@ -560,13 +560,13 @@ img { display: block; max-width: 100%; }
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(59,130,246,0.75);
+  color: rgba(118,236,206,0.75);
   margin-bottom: 1rem;
 }
 
 .query-box {
-  background: rgba(255,255,255,0.7);
-  border: 0.5px solid rgba(59,130,246,0.15);
+  background: rgba(255,255,255,0.75);
+  border: 0.5px solid rgba(175,178,177,0.4);
   border-radius: var(--radius-sm);
   padding: 0.85rem 1rem;
   font-size: 13px;
@@ -577,7 +577,7 @@ img { display: block; max-width: 100%; }
   transition: border-color 0.2s;
   cursor: default;
 }
-.query-box:hover { border-color: rgba(59,130,246,0.25); }
+.query-box:hover { border-color: rgba(118,236,206,0.25); }
 
 /* =============================================
    CTA SECTION
