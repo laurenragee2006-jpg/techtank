@@ -15,7 +15,7 @@
   <nav class="nav">
     <div class="nav__logo">lu<span>cent</span></div>
     <ul class="nav__links">
-      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#features">Features</a></li>
       <li><a href="#platforms">Platforms</a></li>
       <li><a href="#ai">AI features</a></li>
     </ul>
@@ -92,6 +92,146 @@
             <span class="mock-ai-tag">AI filtered</span>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCROLL FEATURES -->
+  <section class="sf-section" id="features">
+    <div class="sf-sticky">
+
+      <!-- Progress track -->
+      <div class="sf-track">
+        <div class="sf-track__bar"><div class="sf-track__fill" id="sfFill"></div></div>
+        <div class="sf-track__dots">
+          <button class="sf-dot sf-dot--active" data-step="0"></button>
+          <button class="sf-dot" data-step="1"></button>
+          <button class="sf-dot" data-step="2"></button>
+          <button class="sf-dot" data-step="3"></button>
+        </div>
+      </div>
+
+      <!-- Left: copy -->
+      <div class="sf-copy-wrap">
+        <div class="sf-copy sf-copy--active" data-panel="0">
+          <div class="sf-step-label">01 / 04</div>
+          <h2>One link,<br>zero friction</h2>
+          <p>Share a single branded URL with founders. They complete a clean 5-step application — their answers land directly in your database, structured from the start.</p>
+        </div>
+        <div class="sf-copy" data-panel="1">
+          <div class="sf-step-label">02 / 04</div>
+          <h2>Every application,<br>instantly organized</h2>
+          <p>Submissions are auto-tagged by sector, stage, location, and raise target the moment they arrive. No manual sorting. No data entry. Just a clean, searchable database.</p>
+        </div>
+        <div class="sf-copy" data-panel="2">
+          <div class="sf-step-label">03 / 04</div>
+          <h2>Review together,<br>decide faster</h2>
+          <p>Your whole team shares one dashboard. Open any applicant, leave notes, update their status, and generate a full diligence report with one click.</p>
+        </div>
+        <div class="sf-copy" data-panel="3">
+          <div class="sf-step-label">04 / 04</div>
+          <h2>Ask AI,<br>find anyone</h2>
+          <p>Type a plain-English question. The AI reads your entire pipeline and surfaces exactly who you're looking for — in seconds, not hours of manual filtering.</p>
+        </div>
+      </div>
+
+      <!-- Right: visuals -->
+      <div class="sf-visual-wrap">
+
+        <!-- Visual 0: Apply form -->
+        <div class="sf-visual sf-visual--active" data-visual="0">
+          <div class="sfv-card">
+            <div class="sfv-steps">
+              <div class="sfv-step sfv-step--done">Contact</div>
+              <div class="sfv-step sfv-step--active">Company</div>
+              <div class="sfv-step">Business</div>
+              <div class="sfv-step">Financing</div>
+              <div class="sfv-step">Docs</div>
+            </div>
+            <div class="sfv-fields">
+              <div class="sfv-field"><div class="sfv-label">Company name</div><div class="sfv-input sfv-input--filled">NovaSprout Inc.</div></div>
+              <div class="sfv-field"><div class="sfv-label">Industry</div><div class="sfv-input sfv-input--filled">Climate Tech</div></div>
+              <div class="sfv-field"><div class="sfv-label">Year founded</div><div class="sfv-input sfv-input--filled">2024</div></div>
+              <div class="sfv-field"><div class="sfv-label">Website</div><div class="sfv-input">novasprout.io<span class="sfv-cursor"></span></div></div>
+            </div>
+            <div class="sfv-footer">
+              <div class="sfv-progress-bar"><div class="sfv-progress-fill" style="width:40%"></div></div>
+              <span>Step 2 of 5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual 1: Database table -->
+        <div class="sf-visual" data-visual="1">
+          <div class="sfv-card">
+            <div class="sfv-table-header">
+              <span>Founder</span><span>Sector</span><span>Stage</span><span>Status</span>
+            </div>
+            <div class="sfv-row">
+              <div class="sfv-row-name"><div class="sfv-av" style="background:rgba(97,211,240,0.15);color:#61d3f0">JM</div>Jamie Martinez</div>
+              <span class="sfv-tag">Climate Tech</span><span class="sfv-tag">Pre-seed</span>
+              <span class="sfv-badge sfv-badge--new">New</span>
+            </div>
+            <div class="sfv-row">
+              <div class="sfv-row-name"><div class="sfv-av" style="background:rgba(122,184,245,0.15);color:#7ab8f5">AL</div>Anika Liu</div>
+              <span class="sfv-tag">Clean Energy</span><span class="sfv-tag">Pre-seed</span>
+              <span class="sfv-badge sfv-badge--reviewed">Reviewed</span>
+            </div>
+            <div class="sfv-row">
+              <div class="sfv-row-name"><div class="sfv-av" style="background:rgba(201,166,255,0.15);color:#c9a6ff">RP</div>Ray Patel</div>
+              <span class="sfv-tag">AgTech</span><span class="sfv-tag">Seed</span>
+              <span class="sfv-badge sfv-badge--shortlisted">Shortlisted</span>
+            </div>
+            <div class="sfv-row sfv-row--dim">
+              <div class="sfv-row-name"><div class="sfv-av" style="background:rgba(97,211,240,0.1);color:#61d3f0">SK</div>Sara Kim</div>
+              <span class="sfv-tag">Fintech</span><span class="sfv-tag">Seed</span>
+              <span class="sfv-badge sfv-badge--new">New</span>
+            </div>
+            <div class="sfv-count">142 applicants · auto-tagged on submission</div>
+          </div>
+        </div>
+
+        <!-- Visual 2: Applicant drawer -->
+        <div class="sf-visual" data-visual="2">
+          <div class="sfv-card">
+            <div class="sfv-drawer-head">
+              <div class="sfv-av sfv-av--lg" style="background:rgba(97,211,240,0.15);color:#61d3f0">JM</div>
+              <div>
+                <div class="sfv-name">Jamie Martinez</div>
+                <div class="sfv-company">NovaSprout · Climate Tech</div>
+              </div>
+            </div>
+            <div class="sfv-drawer-row"><span>Raising</span><span>$350,000</span></div>
+            <div class="sfv-drawer-row"><span>Stage</span><span>Pre-seed</span></div>
+            <div class="sfv-drawer-row"><span>Location</span><span>Austin, TX</span></div>
+            <div class="sfv-drawer-row"><span>Revenue</span><span>$12k MRR</span></div>
+            <div class="sfv-status-row">
+              <button class="sfv-status-btn sfv-status-btn--active">Shortlist</button>
+              <button class="sfv-status-btn">Pass</button>
+              <button class="sfv-status-btn">Request info</button>
+            </div>
+            <div class="sfv-report-btn">✦ Generate diligence report</div>
+          </div>
+        </div>
+
+        <!-- Visual 3: AI search -->
+        <div class="sf-visual" data-visual="3">
+          <div class="sfv-card sfv-card--ai">
+            <div class="sfv-ai-label">✦ AI search</div>
+            <div class="sfv-ai-query">"Show me pre-seed founders in climate tech with a working prototype"</div>
+            <div class="sfv-ai-result">
+              <div class="sfv-ai-row">→ <strong>Jamie Martinez</strong> — NovaSprout · Climate Tech · Austin, TX</div>
+              <div class="sfv-ai-row">→ <strong>Anika Liu</strong> — SolarForm · Clean Energy · SF, CA</div>
+              <div class="sfv-ai-row">→ <strong>Carlos Rivera</strong> — AeroRoot · AgTech · Denver, CO</div>
+            </div>
+            <div class="sfv-ai-chips">
+              <span class="sfv-chip">Prior VC experience</span>
+              <span class="sfv-chip">Solo founders</span>
+              <span class="sfv-chip">Top by traction</span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
