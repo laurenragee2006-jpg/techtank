@@ -17,6 +17,7 @@ const AVATAR_COLORS = [
 let allApplicants = [];
 let filteredData = [];
 let currentApplicant = null;
+let currentView = 'table';
 
 function initials(first, last) {
   return ((first || '?')[0] + (last || '?')[0]).toUpperCase();
@@ -172,9 +173,149 @@ function updateStats() {
   document.querySelector('.db-count').textContent = `${total} total`;
 }
 
+// --- VIEW TOGGLE ---
+
+function switchView(view) {
+  currentView = view;
+  const tableWrap  = document.querySelector('.db-table-wrap');
+  const kanbanBoard = document.getElementById('kanbanBoard');
+  document.getElementById('viewTable').classList.toggle('db-view-btn--active', view === 'table');
+  document.getElementById('viewKanban').classList.toggle('db-view-btn--active', view === 'kanban');
+  if (view === 'kanban') {
+    tableWrap.style.display  = 'none';
+    kanbanBoard.style.display = 'flex';
+    renderKanban(filteredData);
+  } else {
+    tableWrap.style.display  = '';
+    kanbanBoard.style.display = 'none';
+    renderTable(filteredData);
+  }
+}
+
+// --- KANBAN ---
+
+const KANBAN_STATUSES = ['New', 'Reviewed', 'Shortlisted', 'Passed', 'Denied'];
+
+function renderKanban(data) {
+  const board = document.getElementById('kanbanBoard');
+  board.innerHTML = '';
+
+  KANBAN_STATUSES.forEach(status => {
+    const colData = data.filter(a => (a.status || 'New') === status);
+
+    const col = document.createElement('div');
+    col.className = 'kanban-col';
+    col.dataset.status = status;
+    col.innerHTML = `
+      <div class="kanban-col__header">
+        <span class="kanban-col__title">${status}</span>
+        <span class="kanban-col__count">${colData.length}</span>
+      </div>
+      <div class="kanban-col__cards" id="kcol-${status}"></div>
+    `;
+
+    const cardsEl = col.querySelector('.kanban-col__cards');
+
+    cardsEl.addEventListener('dragover', e => {
+      e.preventDefault();
+      col.classList.add('kanban-col--over');
+    });
+    cardsEl.addEventListener('dragleave', e => {
+      if (!col.contains(e.relatedTarget)) col.classList.remove('kanban-col--over');
+    });
+    cardsEl.addEventListener('drop', e => {
+      e.preventDefault();
+      col.classList.remove('kanban-col--over');
+      const id = e.dataTransfer.getData('applicantId');
+      if (id) handleKanbanDrop(id, status);
+    });
+
+    colData.forEach(a => {
+      const colorIdx = allApplicants.findIndex(x => x.id === a.id);
+      const [bg, color] = AVATAR_COLORS[Math.max(0, colorIdx) % AVATAR_COLORS.length];
+
+      const card = document.createElement('div');
+      card.className = 'kanban-card';
+      card.draggable = true;
+      card.dataset.id = a.id;
+      card.innerHTML = `
+        <div class="kanban-card__top">
+          <div class="kanban-card__avatar" style="background:${bg};color:${color}">${initials(a.first_name, a.last_name)}</div>
+          <span class="kanban-card__name">${a.first_name} ${a.last_name}</span>
+        </div>
+        <div class="kanban-card__company">${a.company_name || '—'}</div>
+        <div class="kanban-card__tags">
+          ${a.sector  ? `<span class="kanban-tag">${a.sector}</span>` : ''}
+          ${a.stage   ? `<span class="kanban-tag">${a.stage}</span>`  : ''}
+          ${a.raising ? `<span class="kanban-tag">${a.raising}</span>` : ''}
+        </div>
+      `;
+
+      card.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('applicantId', String(a.id));
+        setTimeout(() => card.classList.add('kanban-card--dragging'), 0);
+      });
+      card.addEventListener('dragend', () => card.classList.remove('kanban-card--dragging'));
+      card.addEventListener('click',   () => openDrawer(a, bg, color));
+
+      cardsEl.appendChild(card);
+    });
+
+    board.appendChild(col);
+  });
+}
+
+async function handleKanbanDrop(id, newStatus) {
+  const idx = allApplicants.findIndex(a => String(a.id) === String(id));
+  if (idx === -1) return;
+  if (allApplicants[idx].status === newStatus) return;
+
+  allApplicants[idx].status = newStatus;
+  filteredData = filteredData.map(a => String(a.id) === String(id) ? { ...a, status: newStatus } : a);
+
+  await db.from('applications').update({ status: newStatus }).eq('id', id);
+  renderKanban(filteredData);
+  updateStats();
+}
+
+// --- EXPORT CSV ---
+
+function exportCSV() {
+  const cols = [
+    'first_name','last_name','email','phone','role',
+    'company_name','sector','stage','location','raising',
+    'revenue','committed','status','created_at',
+    'value_proposition','description','target_market',
+    'website','linkedin','notes'
+  ];
+  const headers = [
+    'First Name','Last Name','Email','Phone','Role',
+    'Company','Sector','Stage','Location','Raising',
+    'Revenue','Committed','Status','Applied',
+    'Value Proposition','Description','Target Market',
+    'Website','LinkedIn','Notes'
+  ];
+
+  const rows = [headers.join(',')];
+  filteredData.forEach(a => {
+    rows.push(cols.map(c => `"${(a[c] || '').toString().replace(/"/g, '""')}"`).join(','));
+  });
+
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href  = url;
+  link.download = `lucent-applicants-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 // --- TABLE ---
 
 function renderTable(data) {
+  if (currentView === 'kanban') { renderKanban(data); return; }
   const tbody = document.getElementById('applicantBody');
   tbody.innerHTML = '';
 
@@ -420,6 +561,7 @@ let chartInstances = {};
 function showAnalytics() {
   document.getElementById('analyticsPanel').style.display = 'flex';
   document.querySelector('.db-table-wrap').style.display = 'none';
+  document.getElementById('kanbanBoard').style.display = 'none';
   document.querySelector('.db-stats').style.display = 'none';
   document.querySelector('.db-topbar').style.display = 'none';
   renderAnalytics();
@@ -427,9 +569,14 @@ function showAnalytics() {
 
 function hideAnalytics() {
   document.getElementById('analyticsPanel').style.display = 'none';
-  document.querySelector('.db-table-wrap').style.display = '';
   document.querySelector('.db-stats').style.display = '';
   document.querySelector('.db-topbar').style.display = '';
+  if (currentView === 'kanban') {
+    document.getElementById('kanbanBoard').style.display = 'flex';
+    renderKanban(filteredData);
+  } else {
+    document.querySelector('.db-table-wrap').style.display = '';
+  }
 }
 
 function destroyCharts() {

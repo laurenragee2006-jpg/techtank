@@ -577,6 +577,138 @@
 
 .login-card input:focus { border-color: rgba(97,211,240,0.4); }
 
+/* --- VIEW TOGGLE --- */
+.db-view-toggle {
+  display: flex;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.db-view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 10px;
+  background: var(--bg-card);
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.db-view-btn:hover { color: var(--text-muted); background: rgba(255,255,255,0.04); }
+.db-view-btn--active { background: rgba(97,211,240,0.1); color: var(--accent); }
+
+/* --- KANBAN BOARD --- */
+.db-kanban {
+  flex: 1;
+  display: flex;
+  gap: 12px;
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-items: flex-start;
+}
+
+.kanban-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 230px;
+  max-width: 230px;
+  max-height: 100%;
+  background: rgba(255,255,255,0.02);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.kanban-col__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 0.5px solid var(--border);
+  flex-shrink: 0;
+}
+
+.kanban-col__title {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.kanban-col__count {
+  font-size: 11px;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.06);
+  padding: 1px 8px;
+  border-radius: 100px;
+}
+
+.kanban-col[data-status="New"]        .kanban-col__title { color: var(--accent); }
+.kanban-col[data-status="Reviewed"]   .kanban-col__title { color: var(--blue); }
+.kanban-col[data-status="Shortlisted"].kanban-col__title { color: var(--purple); }
+.kanban-col[data-status="Passed"]     .kanban-col__title { color: var(--text-dim); }
+.kanban-col[data-status="Denied"]     .kanban-col__title { color: rgba(255,100,100,0.85); }
+
+.kanban-col__cards {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 10px;
+  min-height: 80px;
+}
+
+.kanban-col--over { background: rgba(97,211,240,0.04); border-color: rgba(97,211,240,0.2); }
+
+.kanban-card {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+  cursor: grab;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  user-select: none;
+}
+.kanban-card:hover {
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+.kanban-card:active { cursor: grabbing; }
+.kanban-card--dragging { opacity: 0.35; transform: scale(0.97); }
+
+.kanban-card__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+.kanban-card__avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 500; flex-shrink: 0;
+}
+.kanban-card__name {
+  font-size: 12px; font-weight: 500; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
+}
+.kanban-card__company {
+  font-size: 11px; color: var(--text-muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  margin-bottom: 7px;
+}
+.kanban-card__tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.kanban-tag {
+  font-size: 10px; padding: 2px 7px; border-radius: 100px;
+  background: rgba(255,255,255,0.05); color: var(--text-dim);
+  border: 0.5px solid var(--border); white-space: nowrap;
+}
+
 /* =============================================
    ANALYTICS
    ============================================= */
